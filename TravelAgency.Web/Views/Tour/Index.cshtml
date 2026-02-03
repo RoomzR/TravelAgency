@@ -1,0 +1,81 @@
+@model IEnumerable<TravelAgency.BLL.Entities.Tour>
+@{
+    ViewData["Title"] = "Туры";
+}
+
+<div class="container mt-4">
+    <h1>Туры</h1>
+    
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Страна</label>
+                    <select name="country" class="form-select">
+                        <option value="">Все страны</option>
+                        @foreach (var country in ViewBag.Countries)
+                        {
+                            <option value="@country.Name">@country.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Тип тура</label>
+                    <select name="type" class="form-select">
+                        <option value="">Все типы</option>
+                        @foreach (var type in ViewBag.TourTypes)
+                        {
+                            <option value="@type.Name">@type.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Мин. цена</label>
+                    <input type="number" name="minPrice" class="form-control" placeholder="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Макс. цена</label>
+                    <input type="number" name="maxPrice" class="form-control" placeholder="1000000">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Фильтровать</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список туров -->
+    <div class="row">
+        @foreach (var tour in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@(tour.ImageUrlsJson != null ? tour.ImageUrlsJson.Trim('[', ']', '"') : "/images/default-tour.jpg")" 
+                         class="card-img-top" alt="@tour.Title" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@tour.Title</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                @tour.Country?.Name, @tour.City?.Name<br>
+                                @tour.DurationDays дней / @tour.Price.ToString("C")<br>
+                                Отель: @tour.HotelCategory?.Name<br>
+                                Начало: @tour.StartDate.ToString("dd.MM.yyyy")
+                            </small>
+                        </p>
+                        <p class="card-text">@(tour.Description.Length > 100 ? tour.Description.Substring(0, 100) + "..." : tour.Description)</p>
+                        <a href="@Url.Action("Details", new { id = tour.Id })" class="btn btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Туры не найдены. Попробуйте изменить параметры поиска.
+        </div>
+    }
+</div>

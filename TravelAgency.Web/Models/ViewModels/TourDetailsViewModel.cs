@@ -1,0 +1,4 @@
+namespace TravelAgency.Web.Models
+{
+    
+}
