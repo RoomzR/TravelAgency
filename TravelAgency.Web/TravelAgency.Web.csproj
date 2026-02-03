@@ -20,4 +20,8 @@
     <ProjectReference Include="..\TravelAgency.DAL\TravelAgency.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\ViewModels\" />
+  </ItemGroup>
+
 </Project>

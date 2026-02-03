@@ -1,4 +1,0 @@
-namespace TravelAgency.Web.Models
-{
-    
-}
