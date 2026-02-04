@@ -1,4 +1,6 @@
-﻿@{
+﻿@model TravelAgency.Web.Models.ViewModels.ContactViewModel
+
+@{
     ViewData["Title"] = "Контакты";
 }
 
@@ -19,8 +21,7 @@
                         </div>
                         <h4>Адрес</h4>
                         <p class="text-muted mb-0">
-                            г. Москва, ул. Примерная, д. 123<br>
-                            Бизнес-центр "Путешествия"
+                            г. Гомель, ул. Рогачевская, д. 6<br>
                         </p>
                     </div>
                 </div>
@@ -31,7 +32,7 @@
                         </div>
                         <h4>Телефон</h4>
                         <p class="text-muted mb-0">
-                            +7 (495) 123-45-67<br>
+                            +375 (44) 7960306<br>
                             Пн-Пт: 9:00-20:00, Сб: 10:00-18:00
                         </p>
                     </div>
@@ -43,8 +44,8 @@
                         </div>
                         <h4>Email</h4>
                         <p class="text-muted mb-0">
-                            info@travelagency.ru<br>
-                            booking@travelagency.ru
+                            info@travelagency.by<br>
+                            booking@travelagency.by
                         </p>
                     </div>
                 </div>
@@ -55,23 +56,33 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <h3 class="h4 mb-4">Форма обратной связи</h3>
-                            <form id="contactForm">
+                            <form method="post" asp-action="Contact">
+                                @Html.AntiForgeryToken()
+
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Ваше имя</label>
-                                    <input type="text" class="form-control" id="name" required>
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" required>
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">Телефон</label>
-                                    <input type="tel" class="form-control" id="phone">
+                                    <label asp-for="Phone" class="form-label"></label>
+                                    <input asp-for="Phone" class="form-control" />
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="message" class="form-label">Сообщение</label>
-                                    <textarea class="form-control" id="message" rows="4" required></textarea>
+                                    <label asp-for="Message" class="form-label"></label>
+                                    <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+                                    <span asp-validation-for="Message" class="text-danger"></span>
                                 </div>
+
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-paper-plane me-2"></i>Отправить сообщение
                                 </button>
@@ -141,11 +152,14 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.');
-            this.reset();
-        });
-    </script>
+    <partial name="_ValidationScriptsPartial" />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            $(document).ready(function() {
+                alert('@TempData["SuccessMessage"]');
+            });
+        </script>
+    }
 }

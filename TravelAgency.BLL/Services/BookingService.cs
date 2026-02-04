@@ -1,0 +1,268 @@
+﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
+using TravelAgency.BLL.DTOs;
+using TravelAgency.BLL.Entities;
+using TravelAgency.BLL.Interfaces;
+using TravelAgency.BLL.Services;
+
+namespace TravelAgency.BLL.Services
+{
+    public class BookingService : IBookingService
+    {
+        private readonly IBookingRepository _bookingRepository;
+        private readonly ITourRepository _tourRepository;
+        private readonly IPromoCodeRepository _promoCodeRepository;
+        private readonly ILogger<BookingService> _logger;
+        private readonly IMapper _mapper;
+
+        public BookingService(
+            IBookingRepository bookingRepository,
+            ITourRepository tourRepository,
+            IPromoCodeRepository promoCodeRepository,
+            ILogger<BookingService> logger,
+            IMapper mapper)
+        {
+            _bookingRepository = bookingRepository;
+            _tourRepository = tourRepository;
+            _promoCodeRepository = promoCodeRepository;
+            _logger = logger;
+            _mapper = mapper;
+        }
+
+        public async Task<BookingDTO?> GetBookingByIdAsync(int id)
+        {
+            try
+            {
+                var booking = await _bookingRepository.GetFullBookingAsync(id);
+                return booking == null ? null : _mapper.Map<BookingDTO>(booking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting booking with ID: {BookingId}", id);
+                throw;
+            }
+        }
+        public async Task<IEnumerable<BookingDTO>> GetUserBookingsAsync(string userId)
+        {
+            try
+            {
+                var bookings = await _bookingRepository.GetUserBookingsAsync(userId);
+                return _mapper.Map<IEnumerable<BookingDTO>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting bookings for user: {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<BookingDTO>> GetPendingBookingsAsync()
+        {
+            try
+            {
+                var bookings = await _bookingRepository.GetPendingBookingsAsync();
+                return _mapper.Map<IEnumerable<BookingDTO>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting pending bookings");
+                throw;
+            }
+        }
+
+        public async Task<BookingDTO> CreateBookingAsync(BookingCreateDTO createDto, string clientId)
+        {
+            try
+            {
+                // Проверяем доступность тура
+                var tour = await _tourRepository.GetByIdAsync(createDto.TourId);
+                if (tour == null)
+                    throw new ArgumentException("Tour not found");
+
+                var isAvailable = await CheckTourAvailabilityAsync(createDto.TourId, createDto.PeopleCount);
+                if (!isAvailable)
+                    throw new InvalidOperationException("Not enough available places");
+
+                // Проверяем, не забронировал ли уже пользователь этот тур
+                var hasBooking = await _bookingRepository.HasActiveBookingAsync(createDto.TourId, clientId);
+                if (hasBooking)
+                    throw new InvalidOperationException("You already have an active booking for this tour");
+
+                // Рассчитываем цену
+                var totalPrice = await CalculateBookingPriceAsync(createDto.TourId, createDto.PeopleCount, createDto.PromoCode);
+
+                // Создаем бронирование
+                var booking = new Booking
+                {
+                    TourId = createDto.TourId,
+                    ClientId = clientId,
+                    PeopleCount = createDto.PeopleCount,
+                    TotalPrice = totalPrice,
+                    Status = BLL.Enums.BookingStatus.Pending,
+                    BookingDate = DateTime.UtcNow,
+                    Comments = createDto.Comments
+                };
+
+                // Применяем промокод если есть
+                if (!string.IsNullOrEmpty(createDto.PromoCode))
+                {
+                    var promoCode = await _promoCodeRepository.GetByCodeAsync(createDto.PromoCode);
+                    if (promoCode != null && await _promoCodeRepository.IsCodeValidAsync(createDto.PromoCode))
+                    {
+                        booking.PromoCodeId = promoCode.Id;
+                        booking.DiscountAmount = totalPrice * (promoCode.DiscountPercent / 100);
+
+                        // Ограничиваем максимальную скидку
+                        if (promoCode.MaxdiscountAmount.HasValue &&
+                            booking.DiscountAmount > promoCode.MaxdiscountAmount.Value)
+                        {
+                            booking.DiscountAmount = promoCode.MaxdiscountAmount.Value;
+                        }
+                    }
+                }
+
+                await _bookingRepository.CreateAsync(booking);
+
+                // Увеличиваем счетчик использования промокода
+                if (booking.PromoCodeId.HasValue)
+                {
+                    await _promoCodeRepository.IncrementUsesAsync(booking.PromoCodeId.Value);
+                }
+
+                // Увеличиваем счетчик бронирований тура
+                tour.BookingsCount++;
+                await _tourRepository.UpdateAsync(tour);
+
+                return _mapper.Map<BookingDTO>(booking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating booking for user: {UserId}", clientId);
+                throw;
+            }
+        }
+
+        public async Task<BookingDTO?> UpdateBookingStatusAsync(BookingUpdateDTO updateDto)
+        {
+            try
+            {
+                var booking = await _bookingRepository.GetFullBookingAsync(updateDto.Id);
+                if (booking == null) return null;
+
+                // Используем ManagerId из DTO
+                booking.ManagerConfirmedId = updateDto.ManagerId;
+
+                if (Enum.TryParse<TravelAgency.BLL.Enums.BookingStatus>(updateDto.Status, out var newStatus))
+                {
+                    booking.Status = newStatus;
+                }
+
+                await _bookingRepository.UpdateAsync(booking);
+                return _mapper.Map<BookingDTO>(booking);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating booking status");
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckTourAvailabilityAsync(int tourId, int peopleCount)
+        {
+            try
+            {
+                var tour = await _tourRepository.GetByIdAsync(tourId);
+                if (tour == null) return false;
+
+                var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(tourId);
+                var availablePlaces = tour.MaxPeopleCount - bookedPlaces;
+
+                return availablePlaces >= peopleCount;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking tour availability: {TourId}", tourId);
+                throw;
+            }
+        }
+
+        public async Task<decimal> CalculateBookingPriceAsync(int tourId, int peopleCount, string? promoCode = null)
+        {
+            try
+            {
+                var tour = await _tourRepository.GetByIdAsync(tourId);
+                if (tour == null)
+                    throw new ArgumentException("Tour not found");
+
+                var price = tour.DiscountedPrice * peopleCount;
+
+                // Применяем промокод если есть
+                if (!string.IsNullOrEmpty(promoCode))
+                {
+                    var promo = await _promoCodeRepository.GetByCodeAsync(promoCode);
+                    if (promo != null && await _promoCodeRepository.IsCodeValidAsync(promoCode))
+                    {
+                        var discount = price * (promo.DiscountPercent / 100);
+
+                        // Ограничиваем максимальную скидку
+                        if (promo.MaxdiscountAmount.HasValue && discount > promo.MaxdiscountAmount.Value)
+                        {
+                            discount = promo.MaxdiscountAmount.Value;
+                        }
+
+                        price -= discount;
+                    }
+                }
+
+                return price;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calculating booking price for tour: {TourId}", tourId);
+                throw;
+            }
+        }
+
+        public async Task<bool> CancelBookingAsync(int id, string userId)
+        {
+            try
+            {
+                var booking = await _bookingRepository.GetFullBookingAsync(id);
+                if (booking == null || booking.ClientId != userId)
+                    return false;
+
+                if (booking.Status == BLL.Enums.BookingStatus.Cancelled)
+                    return true;
+
+                // Можно отменять только pending или confirmed бронирования
+                if (booking.Status != BLL.Enums.BookingStatus.Pending &&
+                    booking.Status != BLL.Enums.BookingStatus.Confirmed)
+                    return false;
+
+                booking.Status = BLL.Enums.BookingStatus.Cancelled;
+                await _bookingRepository.UpdateAsync(booking);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling booking: {BookingId}", id);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<BookingDTO>> GetBookingsByTourAsync(int tourId)
+        {
+            try
+            {
+                var bookings = await _bookingRepository.GetBookingsByTourAsync(tourId);
+                return _mapper.Map<IEnumerable<BookingDTO>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting bookings for tour: {TourId}", tourId);
+                throw;
+            }
+        }
+    }
+}

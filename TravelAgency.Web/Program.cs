@@ -1,42 +1,82 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TravelAgency.BLL.Entities;
+using TravelAgency.BLL.Interfaces;
+using TravelAgency.BLL.Mapping;
+using TravelAgency.BLL.Services;
 using TravelAgency.DAL;
 using TravelAgency.DAL.Data;
+using TravelAgency.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Конфигурация БД
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Используем SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString,
-        b => b.MigrationsAssembly("TravelAgency.DAL")));
+    options.UseSqlServer(connectionString));
 
-// Настраиваем Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+// Identity
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
-    // Упрощаем для тестирования
     options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 3;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
 
     options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedAccount = false;
 })
+.AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Настраиваем cookie
+// Cookie настройки
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
+});
+
+builder.Services.AddScoped<ITourRepository, TourRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+builder.Services.AddScoped<INewsRepository, NewsRepository>();
+builder.Services.AddScoped<IPromoCodeRepository, PromoCodeRepository>();
+builder.Services.AddScoped<ITourTypeRepository, TourTypeRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+//builder.Services.AddScoped<IFAQRepository, FAQRepository>();
+//builder.Services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+
+builder.Services.AddScoped<ITourService, TourService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ITourTypeService, TourTypeService>();
+builder.Services.AddScoped<INewsService, NewsService>();
+
+//builder.Services.AddScoped<IPromoCodeService, PromoCodeService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+//builder.Services.AddScoped<IContactService, ContactService>();
+//builder.Services.AddScoped<IFAQService, FAQService>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Кэширование
+builder.Services.AddMemoryCache();
+
+// Сессии
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services.AddControllersWithViews();
@@ -44,10 +84,14 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// Конфигурация HTTP request pipeline
+// Конфигурация HTTP pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    // Используем EnsureCreated вместо миграций для простоты
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
 }
 else
 {
@@ -58,6 +102,7 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -67,8 +112,13 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 // Инициализация базы данных
-using (var scope = app.Services.CreateScope())
+await InitializeDatabase(app);
+
+app.Run();
+
+async Task InitializeDatabase(WebApplication app)
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     try
     {
@@ -76,14 +126,11 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        await context.Database.MigrateAsync();
-
-        // Получаем данные администратора из конфигурации
         var configuration = services.GetRequiredService<IConfiguration>();
-        var adminEmail = configuration["AdminSettings:Email"] ?? "admin@example.com";
+        var adminEmail = configuration["AdminSettings:Email"] ?? "admin@travelagency.com";
         var adminPassword = configuration["AdminSettings:Password"] ?? "Admin123!";
         var adminFirstName = configuration["AdminSettings:FirstName"] ?? "Admin";
-        var adminLastName = configuration["AdminSettings:LastName"] ?? "Admin";
+        var adminLastName = configuration["AdminSettings:LastName"] ?? "System";
 
         await DbInitializer.InitializeAsync(
             context,
@@ -102,5 +149,3 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Ошибка при инициализации базы данных");
     }
 }
-
-app.Run();

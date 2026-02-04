@@ -153,6 +153,20 @@ namespace TravelAgency.DAL
                 context.Tours.AddRange(tours);
                 await context.SaveChangesAsync();
             }
+            if (!context.TourTypes.Any())
+            {
+                var tourTypes = new List<TourType>
+                    {
+                        new TourType { Name = "Пляжный отдых" },
+                        new TourType { Name = "Экскурсионный" },
+                        new TourType { Name = "Горнолыжный" },
+                        new TourType { Name = "Лечебный" },
+                        new TourType { Name = "Шопинг-тур" }
+                    };
+
+                context.TourTypes.AddRange(tourTypes);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

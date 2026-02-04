@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TravelAgency.BLL.Entities;
+using TravelAgency.BLL.Enums;
 using TravelAgency.DAL.Data;
 using TravelAgency.Web.Models;
 using TravelAgency.Web.Models.ViewModels;
@@ -66,11 +68,47 @@ namespace TravelAgency.Web.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Contact()
         {
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Contact(ContactViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var contactRequest = new ContactRequest
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    Phone = model.Phone,
+                    Message = model.Message,
+                    CreatedDate = DateTime.UtcNow,
+                    Status = ContactStatus.New
+                };
+
+                //if (User.Identity?.IsAuthenticated == true)
+                //{
+                //    var user = await _userManager.GetUserAsync(User);
+                //    if (user != null)
+                //    {
+                //        contactRequest.UserId = user.Id;
+                //    }
+                //}
+
+                _context.ContactRequests.Add(contactRequest);
+                await _context.SaveChangesAsync();
+
+
+                TempData["SuccessMessage"] = "Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.";
+                return RedirectToAction("Contact");
+            }
+
+            return View(model);
+        }
         public IActionResult Privacy()
         {
             return View();

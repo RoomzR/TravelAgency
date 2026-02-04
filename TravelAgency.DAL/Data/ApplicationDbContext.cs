@@ -25,6 +25,7 @@ namespace TravelAgency.DAL.Data
         public DbSet<Wishlist> Wishlists { get; set; } = null!;
         public DbSet<TourRating> TourRatings { get; set; } = null!;
         public DbSet<FAQ> FAQs { get; set; } = null!;
+        public DbSet<ContactRequest> ContactRequests { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
