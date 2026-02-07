@@ -17,7 +17,6 @@
 else
 {
     <div class="container py-4">
-        <!-- Навигация -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Главная</a></li>
@@ -27,7 +26,6 @@ else
         </nav>
 
         <div class="row">
-            <!-- Основная информация -->
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-body">
@@ -63,7 +61,6 @@ else
                             </div>
                         </div>
 
-                        <!-- Изображение -->
                         @if (!string.IsNullOrEmpty(Model.ImageUrlsJson))
                         {
                             <div class="mb-4">
@@ -81,7 +78,6 @@ else
                             </div>
                         }
 
-                        <!-- Описание -->
                         <div class="mb-4">
                             <h3 class="h4 mb-3">
                                 <i class="fas fa-info-circle text-primary me-2"></i>Описание
@@ -91,7 +87,6 @@ else
                     </div>
                 </div>
 
-                <!-- Детали -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="card h-100">
@@ -148,7 +143,6 @@ else
                 </div>
             </div>
 
-            <!-- Боковая панель - бронирование -->
             <div class="col-lg-4">
                 <div class="card sticky-top" style="top: 20px;">
                     <div class="card-header bg-primary text-white">
@@ -157,7 +151,6 @@ else
                         </h4>
                     </div>
                     <div class="card-body">
-                        <!-- Информация о доступности -->
                         @if (Model.AvailablePlaces <= 0)
                         {
                             <div class="alert alert-danger">
@@ -170,7 +163,6 @@ else
                                 <i class="fas fa-check-circle"></i> Доступно мест: @Model.AvailablePlaces
                             </div>
 
-                            <!-- Форма бронирования -->
                             <form method="post" action="@Url.Action("Create", "Booking")">
                                 <input type="hidden" name="tourId" value="@Model.Id" />
 
@@ -210,10 +202,9 @@ else
                             </form>
                         }
 
-                        <!-- Контакты -->
                         <div class="border-top pt-3 mt-3">
                             <p class="text-muted small">
-                                <i class="fas fa-phone me-2"></i>Есть вопросы? Звоните: 8-800-123-45-67<br>
+                                <i class="fas fa-phone me-2"></i>Есть вопросы? Звоните: +375447960306<br>
                                 <i class="fas fa-clock me-2"></i>Поддержка 24/7
                             </p>
                         </div>
@@ -222,7 +213,6 @@ else
             </div>
         </div>
 
-        <!-- Кнопки управления для админов -->
         @if (User.Identity?.IsAuthenticated == true &&
             (User.IsInRole("Admin") || User.IsInRole("Manager")))
         {
@@ -244,7 +234,23 @@ else
                     </form>
                 </div>
             </div>
+
+
         }
+        <footer class="border-top footer text-muted bg-light">
+            <div class="container py-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        &copy; 2026 - TravelAgency -
+                        <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span>Телефон: +375 (44) 7960306</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
     </div>
 }
 

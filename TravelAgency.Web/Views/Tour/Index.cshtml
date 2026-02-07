@@ -6,7 +6,6 @@
     <h1>Туры</h1>
     <p class="text-muted">Найдено туров: <strong>@Model.Tours.Count</strong></p>
 
-    <!-- Простая форма поиска -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="get" class="row">
@@ -51,12 +50,10 @@
             <h4>Туры не найдены!</h4>
             <p>Попробуйте изменить параметры поиска или убедитесь, что в базе есть активные туры.</p>
             <a href="/" class="btn btn-primary">На главную</a>
-            <a href="/debug/checkdatabase" class="btn btn-secondary">Проверить базу</a>
         </div>
     }
     else
     {
-        <!-- Простая таблица с турами -->
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead class="table-dark">
@@ -105,7 +102,6 @@
             </table>
         </div>
 
-        <!-- Карточки для мобильных -->
         <div class="d-block d-md-none mt-4">
             <h4>Туры:</h4>
             @foreach (var tour in Model.Tours)
@@ -125,6 +121,21 @@
                 </div>
             }
         </div>
+
+    <footer class="border-top footer text-muted bg-light">
+        <div class="container py-3">
+            <div class="row">
+                <div class="col-md-6">
+                    &copy; 2026 - TravelAgency -
+                    <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span>Телефон: +375 (44) 7960306</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     }
 </div>
 

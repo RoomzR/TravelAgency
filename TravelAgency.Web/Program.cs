@@ -10,13 +10,11 @@ using TravelAgency.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Конфигурация БД
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.Password.RequireDigit = false;
@@ -32,7 +30,6 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Cookie настройки
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -65,13 +62,10 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 //builder.Services.AddScoped<IContactService, ContactService>();
 //builder.Services.AddScoped<IFAQService, FAQService>();
 
-// AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Кэширование
 builder.Services.AddMemoryCache();
 
-// Сессии
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -84,11 +78,9 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// Конфигурация HTTP pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    // Используем EnsureCreated вместо миграций для простоты
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
@@ -111,7 +103,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-// Инициализация базы данных
 await InitializeDatabase(app);
 
 app.Run();

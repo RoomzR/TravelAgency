@@ -52,10 +52,10 @@ namespace TravelAgency.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Tour>> SearchToursAsync(string searchTerm, int? countryId, int? typeId)
+        public async Task<IEnumerable<Tour>> SearchToursAsync(TourSearchDTO searchDto)
         {
             var query = _context.Tours
-                .Where(t => t.IsActive) //&& t.StartDate > DateTime.UtcNow
+                .Where(t => t.IsActive)
                 .Include(t => t.Country)
                 .Include(t => t.City)
                 .Include(t => t.HotelCategory)
@@ -63,25 +63,27 @@ namespace TravelAgency.DAL.Repositories
                 .Include(t => t.Hotel)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            if (!string.IsNullOrWhiteSpace(searchDto.SearchTerm))
             {
-                searchTerm = searchTerm.ToLower();
+                var term = searchDto.SearchTerm.ToLower();
                 query = query.Where(t =>
-                    t.Title.ToLower().Contains(searchTerm) ||
-                    t.Description.ToLower().Contains(searchTerm) ||
-                    t.Country.Name.ToLower().Contains(searchTerm) ||
-                    t.City.Name.ToLower().Contains(searchTerm));
+                    t.Title.ToLower().Contains(term) ||
+                    t.Description.ToLower().Contains(term) ||
+                    t.Country.Name.ToLower().Contains(term) ||
+                    t.City.Name.ToLower().Contains(term));
             }
 
-            if (countryId.HasValue)
-            {
-                query = query.Where(t => t.CountryId == countryId.Value);
-            }
+            if (searchDto.CountryId.HasValue)
+                query = query.Where(t => t.CountryId == searchDto.CountryId.Value);
 
-            if (typeId.HasValue)
-            {
-                query = query.Where(t => t.TourTypeId == typeId.Value);
-            }
+            if (searchDto.TourTypeId.HasValue)
+                query = query.Where(t => t.TourTypeId == searchDto.TourTypeId.Value);
+
+            if (searchDto.MinPrice.HasValue)
+                query = query.Where(t => t.Price >= searchDto.MinPrice.Value);
+
+            if (searchDto.MaxPrice.HasValue)
+                query = query.Where(t => t.Price <= searchDto.MaxPrice.Value);
 
             return await query
                 .OrderByDescending(t => t.CreatedDate)

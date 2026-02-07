@@ -45,76 +45,45 @@ namespace TravelAgency.BLL.Services
 
         public async Task<IEnumerable<TourDTO>> GetActiveToursAsync()
         {
-            try
-            {
-                var tours = await _tourRepository.GetActiveToursAsync();
-                return await MapAndEnrichTours(tours);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting active tours");
-                return new List<TourDTO>();
-            }
+            var tours = await _tourRepository.GetActiveToursAsync();
+            return _mapper.Map<IEnumerable<TourDTO>>(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetHotDealsAsync(int count = 4)
         {
-            try
-            {
-                var tours = await _tourRepository.GetHotDealsAsync(count);
-                return await MapAndEnrichTours(tours);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting hot deals");
-                return new List<TourDTO>();
-            }
+            var tours = await _tourRepository.GetHotDealsAsync(count);
+            return _mapper.Map<IEnumerable<TourDTO>>(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetPopularToursAsync(int count = 6)
         {
-            try
-            {
-                var tours = await _tourRepository.GetPopularToursAsync(count);
-                return await MapAndEnrichTours(tours);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting popular tours");
-                return new List<TourDTO>();
-            }
+            var tours = await _tourRepository.GetPopularToursAsync(count);
+            return _mapper.Map<IEnumerable<TourDTO>>(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> SearchToursAsync(TourSearchDTO searchDto)
         {
             try
             {
-                    var toursFromRepo = await _tourRepository.SearchToursAsync(
-                    searchDto.SearchTerm ?? string.Empty,
-                    searchDto.CountryId,
-                    searchDto.TourTypeId);
+                var tours = await _tourRepository.SearchToursAsync(searchDto);
+                var tourDtos = new List<TourDTO>();
 
-                int count = 0;
-                foreach (var tour in toursFromRepo.Take(3))
+                foreach (var tour in tours)
                 {
-                    _logger.LogInformation($"Тур [{count++}]: ID={tour.Id}, Title='{tour.Title}', IsActive={tour.IsActive}, StartDate={tour.StartDate}");
-                }
+                    var dto = _mapper.Map<TourDTO>(tour);
 
-                _logger.LogInformation("Тест 2: Маппинг в DTO...");
-                var tourDtos = await MapAndEnrichTours(toursFromRepo);
+                    var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(tour.Id);
+                    dto.AvailablePlaces = tour.MaxPeopleCount - bookedPlaces;
 
-                _logger.LogInformation($"После маппинга: {tourDtos.Count()} DTO");
-                foreach (var dto in tourDtos.Take(3))
-                {
-                    _logger.LogInformation($"DTO [{dto.Id}]: {dto.Title}, Country={dto.CountryName}, City={dto.CityName}");
+                    tourDtos.Add(dto);
                 }
 
                 return tourDtos;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка в TourService.SearchToursAsync");
-                throw;
+                _logger.LogError(ex, "Error searching tours");
+                return new List<TourDTO>();
             }
         }
         public async Task<TourDTO> CreateTourAsync(TourCreateDTO createDto, string createdById)
@@ -237,10 +206,6 @@ namespace TravelAgency.BLL.Services
             dto.HotelCategoryName = tour.HotelCategory?.Name ?? "Не указано";
             dto.TourTypeName = tour.TourType?.Name ?? "Не указано";
             dto.HotelName = tour.Hotel?.Name;
-
-            dto.AvailablePlaces = tour.AvailablePlaces;
-            dto.AverageRating = tour.AverageRating;
-            dto.DiscountedPrice = tour.DiscountedPrice;
 
             var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(tour.Id);
             dto.AvailablePlaces = tour.MaxPeopleCount - bookedPlaces;

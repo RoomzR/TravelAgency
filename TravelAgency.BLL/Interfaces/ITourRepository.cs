@@ -1,4 +1,5 @@
-﻿using TravelAgency.BLL.Entities;
+﻿using TravelAgency.BLL.DTOs;
+using TravelAgency.BLL.Entities;
 
 namespace TravelAgency.BLL.Interfaces
 {
@@ -10,6 +11,6 @@ namespace TravelAgency.BLL.Interfaces
         Task IncrementViewsAsync(int tourId);
         Task<IEnumerable<Tour>> GetToursByCountryAsync(int countryId);
         Task<IEnumerable<Tour>> GetToursByTypeAsync(int typeId);
-        Task<IEnumerable<Tour>> SearchToursAsync(string searchTerm, int? countryId, int? typeId);
+        Task<IEnumerable<Tour>> SearchToursAsync(TourSearchDTO searchDto);
     }
 }

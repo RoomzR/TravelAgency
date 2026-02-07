@@ -21,9 +21,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\images\tours\" />
+    <Folder Include="wwwroot\images\cities\" />
+    <Folder Include="wwwroot\images\hotels\" />
     <Folder Include="wwwroot\uploads\tours\" />
     <Folder Include="wwwroot\uploads\countries\" />
     <Folder Include="wwwroot\uploads\hotels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\countries\cyprus.jpg" />
+    <None Include="wwwroot\images\countries\egypt.jpg" />
+    <None Include="wwwroot\images\countries\greece.jpg" />
+    <None Include="wwwroot\images\countries\italy.jpg" />
+    <None Include="wwwroot\images\countries\spain.jpg" />
+    <None Include="wwwroot\images\countries\thailand.jpg" />
+    <None Include="wwwroot\images\countries\turkey.jpg" />
+    <None Include="wwwroot\images\countries\uae.jpg" />
   </ItemGroup>
 
 </Project>

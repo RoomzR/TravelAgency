@@ -93,22 +93,11 @@
                 <div class="col-lg-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
-                            <h3 class="h4 mb-4">Мы на карте</h3>
-                            <div class="ratio ratio-16x9">
-                                <div class="bg-light d-flex align-items-center justify-content-center">
-                                    <div class="text-center">
-                                        <i class="fas fa-map fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted">Карта будет здесь</p>
-                                    </div>
-                                </div>
-                            </div>
+                          
                             <div class="mt-4">
                                 <h4 class="h5">Как добраться</h4>
-                                <p class="small text-muted mb-2">
-                                    <i class="fas fa-subway me-2"></i>Метро: "Центральная", выход №5
-                                </p>
                                 <p class="small text-muted">
-                                    <i class="fas fa-bus me-2"></i>Автобусы: 101, 205, 304 до остановки "Турагентство"
+                                    <i class="fas fa-bus me-2"></i>Троллейбусы: 19, 8, 12 до остановки "Рогачевская"
                                 </p>
                             </div>
                         </div>
@@ -145,8 +134,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Можно ли взять в кредит путешествие?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Да, взять кредит под процент на путешествие в данный момент возможен, только для жителей Республики Беларусь.
+                                Свяжитесь с нашим менеджером для уточнения деталей.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <footer class="border-top footer text-muted bg-light">
+                <div class="container py-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            &copy; 2026 - TravelAgency -
+                            <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span>Телефон: +375 (44) 7960306</span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
         </div>
     </div>
 </div>

@@ -74,7 +74,6 @@ namespace TravelAgency.BLL.Services
         {
             try
             {
-                // Проверяем доступность тура
                 var tour = await _tourRepository.GetByIdAsync(createDto.TourId);
                 if (tour == null)
                     throw new ArgumentException("Tour not found");
@@ -83,15 +82,12 @@ namespace TravelAgency.BLL.Services
                 if (!isAvailable)
                     throw new InvalidOperationException("Not enough available places");
 
-                // Проверяем, не забронировал ли уже пользователь этот тур
                 var hasBooking = await _bookingRepository.HasActiveBookingAsync(createDto.TourId, clientId);
                 if (hasBooking)
                     throw new InvalidOperationException("You already have an active booking for this tour");
 
-                // Рассчитываем цену
                 var totalPrice = await CalculateBookingPriceAsync(createDto.TourId, createDto.PeopleCount, createDto.PromoCode);
 
-                // Создаем бронирование
                 var booking = new Booking
                 {
                     TourId = createDto.TourId,
@@ -103,7 +99,6 @@ namespace TravelAgency.BLL.Services
                     Comments = createDto.Comments
                 };
 
-                // Применяем промокод если есть
                 if (!string.IsNullOrEmpty(createDto.PromoCode))
                 {
                     var promoCode = await _promoCodeRepository.GetByCodeAsync(createDto.PromoCode);
@@ -112,7 +107,6 @@ namespace TravelAgency.BLL.Services
                         booking.PromoCodeId = promoCode.Id;
                         booking.DiscountAmount = totalPrice * (promoCode.DiscountPercent / 100);
 
-                        // Ограничиваем максимальную скидку
                         if (promoCode.MaxdiscountAmount.HasValue &&
                             booking.DiscountAmount > promoCode.MaxdiscountAmount.Value)
                         {
@@ -123,13 +117,11 @@ namespace TravelAgency.BLL.Services
 
                 await _bookingRepository.CreateAsync(booking);
 
-                // Увеличиваем счетчик использования промокода
                 if (booking.PromoCodeId.HasValue)
                 {
                     await _promoCodeRepository.IncrementUsesAsync(booking.PromoCodeId.Value);
                 }
 
-                // Увеличиваем счетчик бронирований тура
                 tour.BookingsCount++;
                 await _tourRepository.UpdateAsync(tour);
 
@@ -149,7 +141,6 @@ namespace TravelAgency.BLL.Services
                 var booking = await _bookingRepository.GetFullBookingAsync(updateDto.Id);
                 if (booking == null) return null;
 
-                // Используем ManagerId из DTO
                 booking.ManagerConfirmedId = updateDto.ManagerId;
 
                 if (Enum.TryParse<TravelAgency.BLL.Enums.BookingStatus>(updateDto.Status, out var newStatus))
@@ -196,7 +187,6 @@ namespace TravelAgency.BLL.Services
 
                 var price = tour.DiscountedPrice * peopleCount;
 
-                // Применяем промокод если есть
                 if (!string.IsNullOrEmpty(promoCode))
                 {
                     var promo = await _promoCodeRepository.GetByCodeAsync(promoCode);
@@ -204,7 +194,6 @@ namespace TravelAgency.BLL.Services
                     {
                         var discount = price * (promo.DiscountPercent / 100);
 
-                        // Ограничиваем максимальную скидку
                         if (promo.MaxdiscountAmount.HasValue && discount > promo.MaxdiscountAmount.Value)
                         {
                             discount = promo.MaxdiscountAmount.Value;
@@ -234,7 +223,6 @@ namespace TravelAgency.BLL.Services
                 if (booking.Status == BLL.Enums.BookingStatus.Cancelled)
                     return true;
 
-                // Можно отменять только pending или confirmed бронирования
                 if (booking.Status != BLL.Enums.BookingStatus.Pending &&
                     booking.Status != BLL.Enums.BookingStatus.Confirmed)
                     return false;
