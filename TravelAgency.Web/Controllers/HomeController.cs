@@ -13,13 +13,16 @@ namespace TravelAgency.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(
             ApplicationDbContext context,
-            ILogger<HomeController> logger)
+            ILogger<HomeController> logger,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -90,14 +93,14 @@ namespace TravelAgency.Web.Controllers
                     Status = ContactStatus.New
                 };
 
-                //if (User.Identity?.IsAuthenticated == true)
-                //{
-                //    var user = await _userManager.GetUserAsync(User);
-                //    if (user != null)
-                //    {
-                //        contactRequest.UserId = user.Id;
-                //    }
-                //}
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user != null)
+                    {
+                        contactRequest.UserId = user.Id;
+                    }
+                }
 
                 _context.ContactRequests.Add(contactRequest);
                 await _context.SaveChangesAsync();

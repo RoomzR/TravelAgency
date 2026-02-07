@@ -6,143 +6,182 @@
 
 <div class="container py-5">
     <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h1 class="display-4 mb-4">Свяжитесь с нами</h1>
-            <p class="lead mb-5">
-                Мы всегда готовы помочь вам с выбором тура или ответить на ваши вопросы.
-                Свяжитесь с нами удобным для вас способом.
-            </p>
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">Свяжитесь с нами</h1>
+                <p class="lead text-muted">
+                    Мы всегда готовы помочь вам с выбором тура или ответить на ваши вопросы.
+                    Свяжитесь с нами удобным для вас способом.
+                </p>
+                <div class="divider mx-auto" style="width: 80px; height: 3px; background: linear-gradient(90deg, #0d6efd, #198754);"></div>
+            </div>
 
-            <div class="row mb-5">
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 shadow-sm h-100 text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-map-marker-alt fa-3x text-primary"></i>
+            <div class="row mb-5 g-4">
+                <div class="col-md-4">
+                    <div class="card border-start border-4 border-primary shadow-hover h-100">
+                        <div class="card-body p-4 text-center">
+                            <div class="contact-icon bg-primary bg-opacity-10 text-primary mb-3 mx-auto">А</div>
+                            <h4 class="h5 mb-3">Адрес</h4>
+                            <p class="text-muted mb-0">
+                                <strong>г. Гомель</strong><br>
+                                ул. Рогачевская, д. 6
+                            </p>
                         </div>
-                        <h4>Адрес</h4>
-                        <p class="text-muted mb-0">
-                            г. Гомель, ул. Рогачевская, д. 6<br>
-                        </p>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 shadow-sm h-100 text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-phone fa-3x text-success"></i>
+                <div class="col-md-4">
+                    <div class="card border-start border-4 border-success shadow-hover h-100">
+                        <div class="card-body p-4 text-center">
+                            <div class="contact-icon bg-success bg-opacity-10 text-success mb-3 mx-auto">Т</div>
+                            <h4 class="h5 mb-3">Телефон</h4>
+                            <p class="text-muted mb-0">
+                                <strong>+375 (44) 796-03-06</strong><br>
+                                Пн-Пт: 9:00-20:00<br>
+                                Сб: 10:00-18:00
+                            </p>
                         </div>
-                        <h4>Телефон</h4>
-                        <p class="text-muted mb-0">
-                            +375 (44) 7960306<br>
-                            Пн-Пт: 9:00-20:00, Сб: 10:00-18:00
-                        </p>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card border-0 shadow-sm h-100 text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-envelope fa-3x text-warning"></i>
+                <div class="col-md-4">
+                    <div class="card border-start border-4 border-warning shadow-hover h-100">
+                        <div class="card-body p-4 text-center">
+                            <div class="contact-icon bg-warning bg-opacity-10 text-warning mb-3 mx-auto">E</div>
+                            <h4 class="h5 mb-3">Email</h4>
+                            <p class="text-muted mb-0">
+                                <strong>info@travelagency.by</strong><br>
+                                booking@travelagency.by
+                            </p>
                         </div>
-                        <h4>Email</h4>
-                        <p class="text-muted mb-0">
-                            info@travelagency.by<br>
-                            booking@travelagency.by
-                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <h3 class="h4 mb-4">Форма обратной связи</h3>
-                            <form method="post" asp-action="Contact">
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="form-icon bg-primary bg-opacity-10 text-primary me-3"></div>
+                                <h3 class="h4 mb-0">Форма обратной связи</h3>
+                            </div>
+
+                            <form method="post" asp-action="Contact" class="needs-validation" novalidate>
                                 @Html.AntiForgeryToken()
 
                                 <div class="mb-3">
-                                    <label asp-for="Name" class="form-label"></label>
-                                    <input asp-for="Name" class="form-control" />
-                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                                    <input asp-for="Name" class="form-control form-control-lg" placeholder="Ваше имя" />
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label asp-for="Email" class="form-label"></label>
-                                    <input asp-for="Email" class="form-control" />
-                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                                        <input asp-for="Email" class="form-control form-control-lg" placeholder="example@email.com" />
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="Phone" class="form-label fw-semibold"></label>
+                                        <input asp-for="Phone" class="form-control form-control-lg" placeholder="+375 (__) ___ __ __" />
+                                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label asp-for="Phone" class="form-label"></label>
-                                    <input asp-for="Phone" class="form-control" />
-                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                <div class="mb-4">
+                                    <label asp-for="Message" class="form-label fw-semibold"></label>
+                                    <textarea asp-for="Message" class="form-control form-control-lg" rows="4" placeholder="Ваше сообщение..."></textarea>
+                                    <span asp-validation-for="Message" class="text-danger small"></span>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label asp-for="Message" class="form-label"></label>
-                                    <textarea asp-for="Message" class="form-control" rows="4"></textarea>
-                                    <span asp-validation-for="Message" class="text-danger"></span>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane me-2"></i>Отправить сообщение
+                                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-semibold">
+                                    Отправить сообщение
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                          
-                            <div class="mt-4">
-                                <h4 class="h5">Как добраться</h4>
-                                <p class="small text-muted">
-                                    <i class="fas fa-bus me-2"></i>Троллейбусы: 19, 8, 12 до остановки "Рогачевская"
-                                </p>
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="form-icon bg-success bg-opacity-10 text-success me-3"></div>
+                                <h3 class="h4 mb-0">Как добраться</h3>
+                            </div>
+
+                            <div class="location-info">
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="transport-icon me-3"></div>
+                                    <div>
+                                        <h5 class="h6 mb-2">Общественный транспорт</h5>
+                                        <p class="mb-1"><strong>Троллейбусы:</strong> 19, 8, 12</p>
+                                        <p class="mb-0 text-muted small">до остановки "Рогачевская"</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="transport-icon me-3"></div>
+                                    <div>
+                                        <h5 class="h6 mb-2">На автомобиле</h5>
+                                        <p class="mb-0 text-muted small">Бесплатная парковка у здания офиса</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-start">
+                                    <div class="transport-icon me-3"></div>
+                                    <div>
+                                        <h5 class="h6 mb-2">Пешком</h5>
+                                        <p class="mb-0 text-muted small">10 минут от ж/д вокзала</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-5">
-                <h3 class="h4 mb-3">Часто задаваемые вопросы</h3>
-                <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item">
+            <div class="mb-5">
+                <h2 class="h2 mb-4 text-center">Часто задаваемые вопросы</h2>
+                <div class="accordion custom-accordion" id="faqAccordion">
+                    <div class="accordion-item border-0 mb-2 shadow-sm">
                         <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <button class="accordion-button rounded-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                <span class="me-3 text-primary fw-bold">01</span>
                                 Какие документы нужны для бронирования тура?
                             </button>
                         </h2>
-                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
                                 Для бронирования тура необходим паспорт. Для некоторых стран могут
                                 потребоваться дополнительные документы (визы, страховки).
                             </div>
                         </div>
                     </div>
-                    <div class="accordion-item">
+
+                    <div class="accordion-item border-0 mb-2 shadow-sm">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <button class="accordion-button rounded-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                <span class="me-3 text-primary fw-bold">02</span>
                                 Можно ли отменить или перенести бронирование?
                             </button>
                         </h2>
                         <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
+                            <div class="accordion-body text-muted">
                                 Да, отмена или перенос возможны согласно условиям договора.
                                 Свяжитесь с нашим менеджером для уточнения деталей.
                             </div>
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0 shadow-sm">
                         <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <button class="accordion-button rounded-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                <span class="me-3 text-primary fw-bold">03</span>
                                 Можно ли взять в кредит путешествие?
                             </button>
                         </h2>
-                        <div id="faq3" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
                                 Да, взять кредит под процент на путешествие в данный момент возможен, только для жителей Республики Беларусь.
                                 Свяжитесь с нашим менеджером для уточнения деталей.
                             </div>
@@ -150,24 +189,85 @@
                     </div>
                 </div>
             </div>
-
-            <footer class="border-top footer text-muted bg-light">
-                <div class="container py-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            &copy; 2026 - TravelAgency -
-                            <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            <span>Телефон: +375 (44) 7960306</span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
         </div>
     </div>
 </div>
+
+<style>
+    .divider {
+        margin: 1.5rem 0;
+    }
+
+    .contact-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .form-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .transport-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .shadow-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .shadow-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .custom-accordion .accordion-button {
+        background: white;
+        padding: 1.25rem;
+        font-weight: 500;
+    }
+
+        .custom-accordion .accordion-button:not(.collapsed) {
+            background: linear-gradient(90deg, rgba(13, 110, 253, 0.1) 0%, rgba(25, 135, 84, 0.1) 100%);
+            color: #0d6efd;
+            border-color: transparent;
+        }
+
+    .custom-accordion .accordion-body {
+        background: #f8f9fa;
+        border-radius: 0 0 0.75rem 0.75rem;
+        padding: 1.25rem;
+    }
+
+    .form-control-lg {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+
+        .form-control-lg:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -175,8 +275,23 @@
     @if (TempData["SuccessMessage"] != null)
     {
         <script>
-            $(document).ready(function() {
-                alert('@TempData["SuccessMessage"]');
+            document.addEventListener('DOMContentLoaded', function() {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: '@Html.Raw(TempData["SuccessMessage"])'
+                });
             });
         </script>
     }

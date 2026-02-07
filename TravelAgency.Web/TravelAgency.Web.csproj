@@ -24,6 +24,7 @@
     <Folder Include="wwwroot\images\tours\" />
     <Folder Include="wwwroot\images\cities\" />
     <Folder Include="wwwroot\images\hotels\" />
+    <Folder Include="wwwroot\images\icons\" />
     <Folder Include="wwwroot\uploads\tours\" />
     <Folder Include="wwwroot\uploads\countries\" />
     <Folder Include="wwwroot\uploads\hotels\" />

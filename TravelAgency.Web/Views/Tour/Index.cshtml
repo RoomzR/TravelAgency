@@ -3,42 +3,43 @@
     ViewData["Title"] = "Туры";
 }
 
-    <h1>Туры</h1>
-    <p class="text-muted">Найдено туров: <strong>@Model.Tours.Count</strong></p>
+<div class="container py-4">
+    <div class="mb-5">
+        <h1 class="h2 fw-bold mb-2 text-primary">Туры</h1>
+        <p class="text-muted">Найдено туров: <strong>@Model.Tours.Count</strong></p>
+    </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row">
-                <div class="col-md-4 mb-2">
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
                     <input type="text" name="searchTerm" class="form-control"
-                           placeholder="Поиск..." value="@Model.SearchTerm">
+                           placeholder="Поиск по названию" value="@Model.SearchTerm">
                 </div>
-                <div class="col-md-3 mb-2">
-                    <select name="countryId" class="form-control">
+                <div class="col-md-3">
+                    <select name="countryId" class="form-select">
                         <option value="">Все страны</option>
                         @foreach (var country in Model.Countries)
                         {
-                            <option value="@country.Id"
-                                    selected="@(Model.SelectedCountryId == country.Id)">
+                            <option value="@country.Id" selected="@(Model.SelectedCountryId == country.Id)">
                                 @country.Name
                             </option>
                         }
                     </select>
                 </div>
-                <div class="col-md-3 mb-2">
-                    <select name="typeId" class="form-control">
+                <div class="col-md-3">
+                    <select name="typeId" class="form-select">
                         <option value="">Все типы</option>
                         @foreach (var type in Model.TourTypes)
                         {
-                            <option value="@type.Id"
-                                    selected="@(Model.SelectedTypeId == type.Id)">
+                            <option value="@type.Id" selected="@(Model.SelectedTypeId == type.Id)">
                                 @type.Name
                             </option>
                         }
                     </select>
                 </div>
-                <div class="col-md-2 mb-2">
-                    <button type="submit" class="btn btn-primary w-100">Найти</button>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(90deg, #0d6efd, #198754); border: none;">Найти</button>
                 </div>
             </form>
         </div>
@@ -46,111 +47,169 @@
 
     @if (!Model.Tours.Any())
     {
-        <div class="alert alert-warning text-center py-5">
-            <h4>Туры не найдены!</h4>
-            <p>Попробуйте изменить параметры поиска или убедитесь, что в базе есть активные туры.</p>
-            <a href="/" class="btn btn-primary">На главную</a>
+        <div class="alert alert-warning text-center py-5 border-0" style="background: #fff3cd; border-radius: 12px;">
+            <p class="h5 mb-3">Туры не найдены</p>
+            <p class="mb-3 text-muted">Попробуйте изменить параметры поиска</p>
+            <a href="@Url.Action("Index")" class="btn btn-outline-primary">Сбросить фильтры</a>
         </div>
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Название</th>
-                        <th>Страна</th>
-                        <th>Город</th>
-                        <th>Цена</th>
-                        <th>Дата</th>
-                        <th>Дней</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var tour in Model.Tours)
-                    {
-                        <tr>
-                            <td>
-                                <strong>@tour.Title</strong>
-                                @if (tour.IsHotDeal)
-                                {
-                                    <span class="badge bg-danger ms-2">Горящий</span>
-                                }
-                            </td>
-                            <td>@tour.CountryName</td>
-                            <td>@tour.CityName</td>
-                            <td>
-                                <strong class="text-primary">@tour.Price.ToString("C")</strong>
-                                @if (tour.DiscountPercent > 0)
-                                {
-                                    <br>
-                                    <small class="text-success">Скидка @tour.DiscountPercent%</small>
-                                }
-                            </td>
-                            <td>@tour.StartDate.ToString("dd.MM.yyyy")</td>
-                            <td>@tour.DurationDays</td>
-                            <td>
-                                <a href="@Url.Action("Details", new { id = tour.Id })"
-                                   class="btn btn-sm btn-primary">
-                                    Подробнее
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="d-block d-md-none mt-4">
-            <h4>Туры:</h4>
+        <div class="row g-4">
             @foreach (var tour in Model.Tours)
             {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">@tour.Title</h5>
-                        <p class="card-text">
-                            <i class="fas fa-map-marker-alt"></i> @tour.CountryName, @tour.CityName<br>
-                            <i class="fas fa-calendar"></i> @tour.StartDate.ToString("dd.MM.yyyy")<br>
-                            <i class="fas fa-clock"></i> @tour.DurationDays дней<br>
-                            <i class="fas fa-money-bill"></i> @tour.Price.ToString("C")
-                        </p>
-                        <a href="@Url.Action("Details", new { id = tour.Id })"
-                           class="btn btn-primary">Подробнее</a>
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100 tour-card">
+                        <div class="row g-0 h-100">
+                            <div class="col-md-5">
+                                @if (!string.IsNullOrEmpty(tour.ImageUrlsJson))
+                                {
+                                    var images = tour.ImageUrlsJson.Trim('[', ']', '"').Split(',');
+                                    if (images.Length > 0)
+                                    {
+                                        <img src="@images[0].Trim()"
+                                             class="img-fluid h-100 w-100"
+                                             style="object-fit: cover; border-radius: 12px 0 0 12px;"
+                                             alt="@tour.Title"
+                                             onerror="this.src='/images/tours/default.jpg'">
+                                    }
+                                    else
+                                    {
+                                        <div class="h-100 w-100 d-flex align-items-center justify-content-center"
+                                             style="background: linear-gradient(135deg, #0d6efd, #198754); border-radius: 12px 0 0 12px;">
+                                            <span class="text-white fw-bold">@tour.Title</span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="h-100 w-100 d-flex align-items-center justify-content-center"
+                                         style="background: linear-gradient(135deg, #0d6efd, #198754); border-radius: 12px 0 0 12px;">
+                                        <span class="text-white fw-bold">@tour.Title</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-md-7">
+                                <div class="card-body h-100 d-flex flex-column p-3">
+                                    <div class="mb-2">
+                                        <h5 class="card-title fw-bold mb-1" style="color: #2c3e50;">@tour.Title</h5>
+                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                            @if (tour.IsHotDeal)
+                                            {
+                                                <span class="badge" style="background: #dc3545; color: white; font-size: 0.7rem;">Горящий</span>
+                                            }
+                                            @if (tour.DiscountPercent > 0)
+                                            {
+                                                <span class="badge" style="background: #198754; color: white; font-size: 0.7rem;">-@tour.DiscountPercent%</span>
+                                            }
+                                            <span class="badge" style="background: #6c757d; color: white; font-size: 0.7rem;">@tour.TourTypeName</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 flex-grow-1">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="text-muted small"></span>
+                                            <span class="ms-1 small">@tour.CountryName, @tour.CityName</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="text-muted small"></span>
+                                            <span class="ms-1 small">@tour.HotelCategoryName</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="text-muted small"></span>
+                                            <span class="ms-1 small">@tour.StartDate.ToString("dd.MM.yyyy") • @tour.DurationDays дней</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-end mt-auto">
+                                        <div>
+                                            @if (tour.DiscountPercent > 0 && tour.OriginalPrice.HasValue)
+                                            {
+                                                <div class="text-muted text-decoration-line-through small">
+                                                    @tour.OriginalPrice.Value.ToString("C")
+                                                </div>
+                                            }
+                                            <div class="h5 fw-bold mb-0" style="color: #0d6efd;">
+                                                @tour.Price.ToString("C")
+                                            </div>
+                                        </div>
+                                        <a href="@Url.Action("Details", new { id = tour.Id })"
+                                           class="btn btn-sm"
+                                           style="background: linear-gradient(90deg, #0d6efd, #198754); color: white; border: none;">
+                                            Подробнее
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
         </div>
 
-    <footer class="border-top footer text-muted bg-light">
-        <div class="container py-3">
-            <div class="row">
-                <div class="col-md-6">
-                    &copy; 2026 - TravelAgency -
-                    <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Privacy</a>
-                </div>
-                <div class="col-md-6 text-end">
-                    <span>Телефон: +375 (44) 7960306</span>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+      
+        
     }
 </div>
 
 <style>
-    .table th {
-        background-color: #2c3e50;
-        color: white;
+    .tour-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
     }
 
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
+        .tour-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(13, 110, 253, 0.15);
+        }
+
+    .card-body {
+        background: white;
     }
 
     .badge {
-        font-size: 0.8em;
-        padding: 0.3em 0.6em;
+        padding: 0.25rem 0.5rem;
+        font-weight: 500;
+    }
+
+    .page-link {
+        border: none;
+        color: #0d6efd;
+        margin: 0 3px;
+        border-radius: 8px;
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(90deg, #0d6efd, #198754);
+        color: white;
+        border: none;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+    });
+</script>
