@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
-using TravelAgency.BLL.Services;
+using TravelAgency.DAL.Entities; 
+using TravelAgency.DAL.Enums;   
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.BLL.Services
 {
@@ -94,7 +96,7 @@ namespace TravelAgency.BLL.Services
                     ClientId = clientId,
                     PeopleCount = createDto.PeopleCount,
                     TotalPrice = totalPrice,
-                    Status = BLL.Enums.BookingStatus.Pending,
+                    Status = BookingStatus.Pending,
                     BookingDate = DateTime.UtcNow,
                     Comments = createDto.Comments
                 };
@@ -143,7 +145,7 @@ namespace TravelAgency.BLL.Services
 
                 booking.ManagerConfirmedId = updateDto.ManagerId;
 
-                if (Enum.TryParse<TravelAgency.BLL.Enums.BookingStatus>(updateDto.Status, out var newStatus))
+                if (Enum.TryParse<BookingStatus>(updateDto.Status, out var newStatus))
                 {
                     booking.Status = newStatus;
                 }
@@ -220,14 +222,14 @@ namespace TravelAgency.BLL.Services
                 if (booking == null || booking.ClientId != userId)
                     return false;
 
-                if (booking.Status == BLL.Enums.BookingStatus.Cancelled)
+                if (booking.Status == BookingStatus.Cancelled)
                     return true;
 
-                if (booking.Status != BLL.Enums.BookingStatus.Pending &&
-                    booking.Status != BLL.Enums.BookingStatus.Confirmed)
+                if (booking.Status != BookingStatus.Pending &&
+                    booking.Status != BookingStatus.Confirmed)
                     return false;
 
-                booking.Status = BLL.Enums.BookingStatus.Cancelled;
+                booking.Status = BookingStatus.Cancelled;
                 await _bookingRepository.UpdateAsync(booking);
 
                 return true;

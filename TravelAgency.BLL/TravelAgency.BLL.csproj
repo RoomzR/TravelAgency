@@ -12,15 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="TravelAgency.DAL">
-      <HintPath>..\TravelAgency.DAL\bin\Debug\net8.0\TravelAgency.DAL.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-
 	<ItemGroup>
-		<Folder Include="Mapping\" />
-	</ItemGroup>	
+		<ProjectReference Include="..\TravelAgency.DAL\TravelAgency.DAL.csproj" />
+	</ItemGroup>
 
 </Project>

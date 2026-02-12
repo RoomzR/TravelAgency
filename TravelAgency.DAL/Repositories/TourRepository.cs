@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
-using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Interfaces;
 using TravelAgency.DAL.Data;
 
 namespace TravelAgency.DAL.Repositories
@@ -52,44 +51,69 @@ namespace TravelAgency.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Tour>> SearchToursAsync(TourSearchDTO searchDto)
+        public async Task<IEnumerable<Tour>> SearchToursAsync(
+            string? searchTerm = null,
+            int? countryId = null,
+            int? tourTypeId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            int? minDuration = null,
+            int? maxDuration = null,
+            bool? isHotDeal = null,
+            DateTime? startDateFrom = null,
+            DateTime? startDateTo = null)
         {
-            var query = _context.Tours
-                .Where(t => t.IsActive)
-                .Include(t => t.Country)
-                .Include(t => t.City)
-                .Include(t => t.HotelCategory)
-                .Include(t => t.TourType)
-                .Include(t => t.Hotel)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(searchDto.SearchTerm))
-            {
-                var term = searchDto.SearchTerm.ToLower();
-                query = query.Where(t =>
-                    t.Title.ToLower().Contains(term) ||
-                    t.Description.ToLower().Contains(term) ||
-                    t.Country.Name.ToLower().Contains(term) ||
-                    t.City.Name.ToLower().Contains(term));
-            }
-
-            if (searchDto.CountryId.HasValue)
-                query = query.Where(t => t.CountryId == searchDto.CountryId.Value);
-
-            if (searchDto.TourTypeId.HasValue)
-                query = query.Where(t => t.TourTypeId == searchDto.TourTypeId.Value);
-
-            if (searchDto.MinPrice.HasValue)
-                query = query.Where(t => t.Price >= searchDto.MinPrice.Value);
-
-            if (searchDto.MaxPrice.HasValue)
-                query = query.Where(t => t.Price <= searchDto.MaxPrice.Value);
+            var query = BuildSearchQuery(
+                searchTerm, countryId, tourTypeId, minPrice, maxPrice,
+                minDuration, maxDuration, isHotDeal, startDateFrom, startDateTo);
 
             return await query
                 .OrderByDescending(t => t.CreatedDate)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<Tour>> SearchToursAdvancedAsync(TourSearchDTO searchDto)
+
+        public async Task<IEnumerable<Tour>> SearchToursAdvancedAsync(
+            string? searchTerm = null,
+            int? countryId = null,
+            int? tourTypeId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            int? minDuration = null,
+            int? maxDuration = null,
+            bool? isHotDeal = null,
+            DateTime? startDateFrom = null,
+            DateTime? startDateTo = null,
+            string? sortBy = null,
+            bool? sortDescending = null,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var query = BuildSearchQuery(
+                searchTerm, countryId, tourTypeId, minPrice, maxPrice,
+                minDuration, maxDuration, isHotDeal, startDateFrom, startDateTo);
+
+            // Apply sorting
+            query = ApplySorting(query, sortBy, sortDescending);
+
+            // Apply pagination
+            query = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            return await query.ToListAsync();
+        }
+
+        private IQueryable<Tour> BuildSearchQuery(
+            string? searchTerm,
+            int? countryId,
+            int? tourTypeId,
+            decimal? minPrice,
+            decimal? maxPrice,
+            int? minDuration,
+            int? maxDuration,
+            bool? isHotDeal,
+            DateTime? startDateFrom,
+            DateTime? startDateTo)
         {
             var query = _context.Tours
                 .Where(t => t.IsActive)
@@ -100,54 +124,78 @@ namespace TravelAgency.DAL.Repositories
                 .Include(t => t.Hotel)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(searchDto.SearchTerm))
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                var term = searchDto.SearchTerm.ToLower();
+                var term = searchTerm.ToLower();
                 query = query.Where(t =>
-                    t.Title.ToLower().Contains(term) ||
-                    t.Description.ToLower().Contains(term) ||
-                    t.Country.Name.ToLower().Contains(term) ||
-                    t.City.Name.ToLower().Contains(term));
+                    (t.Title != null && t.Title.ToLower().Contains(term)) ||
+                    (t.Description != null && t.Description.ToLower().Contains(term)) ||
+                    (t.Country != null && t.Country.Name != null && t.Country.Name.ToLower().Contains(term)) ||
+                    (t.City != null && t.City.Name != null && t.City.Name.ToLower().Contains(term)));
             }
 
-            if (searchDto.CountryId.HasValue)
-                query = query.Where(t => t.CountryId == searchDto.CountryId.Value);
+            if (countryId.HasValue)
+                query = query.Where(t => t.CountryId == countryId.Value);
 
-            if (searchDto.TourTypeId.HasValue)
-                query = query.Where(t => t.TourTypeId == searchDto.TourTypeId.Value);
+            if (tourTypeId.HasValue)
+                query = query.Where(t => t.TourTypeId == tourTypeId.Value);
 
-            if (searchDto.MinPrice.HasValue)
-                query = query.Where(t => t.Price >= searchDto.MinPrice.Value);
+            if (minPrice.HasValue)
+                query = query.Where(t => t.Price >= minPrice.Value);
 
-            if (searchDto.MaxPrice.HasValue)
-                query = query.Where(t => t.Price <= searchDto.MaxPrice.Value);
+            if (maxPrice.HasValue)
+                query = query.Where(t => t.Price <= maxPrice.Value);
 
-            if (searchDto.IsHotDeal.HasValue)
-                query = query.Where(t => t.IsHotDeal == searchDto.IsHotDeal.Value);
+            if (minDuration.HasValue)
+                query = query.Where(t => t.DurationDays >= minDuration.Value);
 
-            if (!string.IsNullOrEmpty(searchDto.SortBy))
-            {
-                query = searchDto.SortBy.ToLower() switch
-                {
-                    "price" => searchDto.SortDescending == true
-                        ? query.OrderByDescending(t => t.Price)
-                        : query.OrderBy(t => t.Price),
-                    "date" => searchDto.SortDescending == true
-                        ? query.OrderByDescending(t => t.StartDate)
-                        : query.OrderBy(t => t.StartDate),
-                    "name" => searchDto.SortDescending == true
-                        ? query.OrderByDescending(t => t.Title)
-                        : query.OrderBy(t => t.Title),
-                    _ => query.OrderByDescending(t => t.CreatedDate)
-                };
-            }
-            else
-            {
-                query = query.OrderByDescending(t => t.CreatedDate);
-            }
+            if (maxDuration.HasValue)
+                query = query.Where(t => t.DurationDays <= maxDuration.Value);
 
-            return await query.ToListAsync();
+            if (isHotDeal.HasValue)
+                query = query.Where(t => t.IsHotDeal == isHotDeal.Value);
+
+            if (startDateFrom.HasValue)
+                query = query.Where(t => t.StartDate >= startDateFrom.Value);
+
+            if (startDateTo.HasValue)
+                query = query.Where(t => t.StartDate <= startDateTo.Value);
+
+            return query;
         }
+
+        private IQueryable<Tour> ApplySorting(IQueryable<Tour> query, string? sortBy, bool? descending)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy))
+                return query.OrderByDescending(t => t.CreatedDate);
+
+            switch (sortBy.ToLower())
+            {
+                case "price":
+                    return descending == true
+                        ? query.OrderByDescending(t => t.Price)
+                        : query.OrderBy(t => t.Price);
+                case "date":
+                    return descending == true
+                        ? query.OrderByDescending(t => t.StartDate)
+                        : query.OrderBy(t => t.StartDate);
+                case "name":
+                    return descending == true
+                        ? query.OrderByDescending(t => t.Title)
+                        : query.OrderBy(t => t.Title);
+                case "duration":
+                    return descending == true
+                        ? query.OrderByDescending(t => t.DurationDays)
+                        : query.OrderBy(t => t.DurationDays);
+                case "rating":
+                    return query.OrderByDescending(t => t.Reviews != null
+                        ? t.Reviews.Average(r => r.Rating)
+                        : 0);
+                default:
+                    return query.OrderByDescending(t => t.CreatedDate);
+            }
+        }
+
         public async Task IncrementViewsAsync(int tourId)
         {
             var tour = await _context.Tours.FindAsync(tourId);
@@ -194,20 +242,6 @@ namespace TravelAgency.DAL.Repositories
                 .Include(t => t.Reviews)
                 .Include(t => t.CreatedBy)
                 .FirstOrDefaultAsync(t => t.Id == id);
-        }
-        private IQueryable<Tour> ApplySorting(IQueryable<Tour> query, string? sortBy, bool? descending)
-        {
-            query = (sortBy?.ToLower()) switch
-            {
-                "price" => descending == true ? query.OrderByDescending(t => t.Price) : query.OrderBy(t => t.Price),
-                "date" => descending == true ? query.OrderByDescending(t => t.StartDate) : query.OrderBy(t => t.StartDate),
-                "name" => descending == true ? query.OrderByDescending(t => t.Title) : query.OrderBy(t => t.Title),
-                "duration" => descending == true ? query.OrderByDescending(t => t.DurationDays) : query.OrderBy(t => t.DurationDays),
-                "rating" => query.OrderByDescending(t => t.TourRatings.Average(r => r.Rating)),
-                _ => query.OrderByDescending(t => t.CreatedDate) 
-            };
-
-            return query;
         }
     }
 }

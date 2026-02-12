@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Entities;
-using TravelAgency.BLL.Enums;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Enums;
 using TravelAgency.DAL.Data;
 using TravelAgency.Web.Models;
 using TravelAgency.Web.Models.ViewModels;

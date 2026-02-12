@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 
 namespace TravelAgency.BLL.Mapping
 {

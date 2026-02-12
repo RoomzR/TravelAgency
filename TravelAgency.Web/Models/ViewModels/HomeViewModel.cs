@@ -1,4 +1,4 @@
-﻿using TravelAgency.BLL.Entities;
+﻿using TravelAgency.DAL.Entities;
 using System.Collections.Generic;
 
 namespace TravelAgency.Web.Models.ViewModels

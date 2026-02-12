@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 using TravelAgency.Web.Models.ViewModels;
 
 namespace TravelAgency.Web.Controllers

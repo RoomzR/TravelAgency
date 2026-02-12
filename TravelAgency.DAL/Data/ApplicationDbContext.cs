@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 
 namespace TravelAgency.DAL.Data
 {

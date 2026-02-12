@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Interfaces;
 using TravelAgency.BLL.Interfaces;
 
 namespace TravelAgency.BLL.Services
@@ -35,7 +36,6 @@ namespace TravelAgency.BLL.Services
                 var countries = await _countryRepository.GetAllAsync();
                 var countryDtos = _mapper.Map<IEnumerable<CountryDTO>>(countries);
 
-                // Можно добавить дополнительную логику если нужно
                 return countryDtos;
             }
             catch (Exception ex)
@@ -66,7 +66,6 @@ namespace TravelAgency.BLL.Services
             try
             {
                 var countries = await _countryRepository.GetAllAsync();
-                // Берем первые count стран (в реальности нужно логику популярности)
                 var popularCountries = countries.Take(count);
 
                 return _mapper.Map<IEnumerable<CountryDTO>>(popularCountries);

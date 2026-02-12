@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.BLL.Services
 {
@@ -46,39 +47,43 @@ namespace TravelAgency.BLL.Services
         public async Task<IEnumerable<TourDTO>> GetActiveToursAsync()
         {
             var tours = await _tourRepository.GetActiveToursAsync();
-            return _mapper.Map<IEnumerable<TourDTO>>(tours);
+            return await MapAndEnrichTours(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetHotDealsAsync(int count = 4)
         {
             var tours = await _tourRepository.GetHotDealsAsync(count);
-            return _mapper.Map<IEnumerable<TourDTO>>(tours);
+            return await MapAndEnrichTours(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetPopularToursAsync(int count = 6)
         {
             var tours = await _tourRepository.GetPopularToursAsync(count);
-            return _mapper.Map<IEnumerable<TourDTO>>(tours);
+            return await MapAndEnrichTours(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> SearchToursAsync(TourSearchDTO searchDto)
         {
             try
             {
-                var tours = await _tourRepository.SearchToursAsync(searchDto);
-                var tourDtos = new List<TourDTO>();
+                var tours = await _tourRepository.SearchToursAdvancedAsync(
+                    searchTerm: searchDto.SearchTerm,
+                    countryId: searchDto.CountryId,
+                    tourTypeId: searchDto.TourTypeId,
+                    minPrice: searchDto.MinPrice,
+                    maxPrice: searchDto.MaxPrice,
+                    minDuration: searchDto.MinDuration,
+                    maxDuration: searchDto.MaxDuration,
+                    isHotDeal: searchDto.IsHotDeal,
+                    startDateFrom: searchDto.StartDateFrom,
+                    startDateTo: searchDto.StartDateTo,
+                    sortBy: searchDto.SortBy,
+                    sortDescending: searchDto.SortDescending,
+                    pageNumber: searchDto.PageNumber,
+                    pageSize: searchDto.PageSize
+                );
 
-                foreach (var tour in tours)
-                {
-                    var dto = _mapper.Map<TourDTO>(tour);
-
-                    var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(tour.Id);
-                    dto.AvailablePlaces = tour.MaxPeopleCount - bookedPlaces;
-
-                    tourDtos.Add(dto);
-                }
-
-                return tourDtos;
+                return await MapAndEnrichTours(tours);
             }
             catch (Exception ex)
             {
@@ -86,6 +91,7 @@ namespace TravelAgency.BLL.Services
                 return new List<TourDTO>();
             }
         }
+
         public async Task<TourDTO> CreateTourAsync(TourCreateDTO createDto, string createdById)
         {
             try
@@ -95,6 +101,7 @@ namespace TravelAgency.BLL.Services
                 tour.CreatedDate = DateTime.UtcNow;
                 tour.ViewsCount = 0;
                 tour.BookingsCount = 0;
+                tour.IsActive = true;
 
                 await _tourRepository.CreateAsync(tour);
 

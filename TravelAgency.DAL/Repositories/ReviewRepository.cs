@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Entities;
-using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Interfaces;
 using TravelAgency.DAL.Data;
 
 namespace TravelAgency.DAL.Repositories

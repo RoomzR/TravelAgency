@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Interfaces;
+
+
 
 namespace TravelAgency.BLL.Services
 {

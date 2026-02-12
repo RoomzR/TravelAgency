@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
 using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.BLL.Services
 {

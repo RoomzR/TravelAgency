@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Entities;
+using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
 using TravelAgency.BLL.Mapping;
 using TravelAgency.BLL.Services;
 using TravelAgency.DAL;
 using TravelAgency.DAL.Data;
 using TravelAgency.DAL.Repositories;
+using TravelAgency.DAL.Interfaces;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -103,40 +105,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-await InitializeDatabase(app);
-
 app.Run();
 
-async Task InitializeDatabase(WebApplication app)
-{
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-        var configuration = services.GetRequiredService<IConfiguration>();
-        var adminEmail = configuration["AdminSettings:Email"] ?? "admin@travelagency.com";
-        var adminPassword = configuration["AdminSettings:Password"] ?? "Admin123!";
-        var adminFirstName = configuration["AdminSettings:FirstName"] ?? "Admin";
-        var adminLastName = configuration["AdminSettings:LastName"] ?? "System";
-
-        await DbInitializer.InitializeAsync(
-            context,
-            userManager,
-            roleManager,
-            adminEmail,
-            adminPassword,
-            adminFirstName,
-            adminLastName);
-
-        Console.WriteLine("База данных успешно инициализирована!");
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ошибка при инициализации базы данных");
-    }
-}

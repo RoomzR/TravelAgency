@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Interfaces;
 using TravelAgency.DAL.Data;
 
 

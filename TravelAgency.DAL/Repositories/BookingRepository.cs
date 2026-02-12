@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravelAgency.BLL.Entities;
-using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Interfaces;
 using TravelAgency.DAL.Data;
 
 namespace TravelAgency.DAL.Repositories
@@ -27,7 +27,7 @@ namespace TravelAgency.DAL.Repositories
         public async Task<IEnumerable<Booking>> GetPendingBookingsAsync()
         {
             return await _context.Bookings
-                .Where(b => b.Status == BLL.Enums.BookingStatus.Pending)
+                .Where(b => b.Status == DAL.Enums.BookingStatus.Pending)
                 .Include(b => b.Tour)
                 .Include(b => b.Client)
                 .Include(b => b.PromoCode)
@@ -64,20 +64,20 @@ namespace TravelAgency.DAL.Repositories
             return await _context.Bookings
                 .AnyAsync(b => b.TourId == tourId &&
                              b.ClientId == userId &&
-                             b.Status != BLL.Enums.BookingStatus.Cancelled);
+                             b.Status != DAL.Enums.BookingStatus.Cancelled);
         }
 
         public async Task<int> GetBookedPlacesAsync(int tourId)
         {
             return await _context.Bookings
                 .Where(b => b.TourId == tourId &&
-                          b.Status != BLL.Enums.BookingStatus.Cancelled)
+                          b.Status != DAL.Enums.BookingStatus.Cancelled)
                 .SumAsync(b => b.PeopleCount);
         }
 
         public async Task<IEnumerable<Booking>> GetBookingsByStatusAsync(string status)
         {
-            if (!Enum.TryParse<BLL.Enums.BookingStatus>(status, out var statusEnum))
+            if (!Enum.TryParse<DAL.Enums.BookingStatus>(status, out var statusEnum))
                 return Enumerable.Empty<Booking>();
 
             return await _context.Bookings
