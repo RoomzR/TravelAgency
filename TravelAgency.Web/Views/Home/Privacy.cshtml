@@ -1,250 +1,145 @@
 ﻿@{
-    ViewData["Title"] = "Политика конфиденциальности";
+    ViewData["Title"] = "Конфиденциальность";
 }
 
-<div class="container py-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="text-center mb-5">
-                <h1 class="display-5 fw-bold text-primary mb-3">Политика конфиденциальности</h1>
-                <p class="lead text-muted">
-                    Последнее обновление: @DateTime.Now.ToString("dd.MM.yyyy")
-                </p>
-                <div class="divider mx-auto" style="width: 80px; height: 3px; background: linear-gradient(90deg, #0d6efd, #198754);"></div>
-            </div>
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container mt-5 pt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-9" data-aos="fade-up">
 
-            <div class="privacy-content">
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">1. Введение</h2>
-                        <p>
-                            Компания Travel Agency уважает вашу конфиденциальность и обязуется защищать
-                            ваши персональные данные. Настоящая Политика конфиденциальности описывает,
-                            как мы собираем, используем и защищаем информацию, которую вы предоставляете
-                            при использовании нашего веб-сайта и услуг.
-                        </p>
+                <div class="privacy-hero p-5 mb-5 text-center">
+                    <div class="privacy-icon-glow mb-4">
+                        <i class="fas fa-user-shield"></i>
                     </div>
+                    <h1 class="giant-title-mini text-white mb-3">КОНФИДЕНЦИАЛЬНОСТЬ</h1>
+                    <p class="text-primary-blue fw-bold letter-spacing-sm">ВАША БЕЗОПАСНОСТЬ — НАШ ГЛАВНЫЙ ПРИОРЕТЕТ</p>
                 </div>
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">2. Собираемая информация</h2>
-                        <p>Мы можем собирать следующие типы информации:</p>
-                        <ul class="list-unstyled ps-3">
-                            <li class="mb-2">
-                                <span class="text-primary fw-bold me-2">•</span>
-                                <strong>Персональные данные:</strong> имя, фамилия, email, телефон, адрес
-                            </li>
-                            <li class="mb-2">
-                                <span class="text-primary fw-bold me-2">•</span>
-                                <strong>Паспортные данные:</strong> необходимы для бронирования туров
-                            </li>
-                            <li class="mb-2">
-                                <span class="text-primary fw-bold me-2">•</span>
-                                <strong>Информация о платежах:</strong> данные банковских карт (обрабатываются через защищенные платежные шлюзы)
-                            </li>
-                            <li>
-                                <span class="text-primary fw-bold me-2">•</span>
-                                <strong>Технические данные:</strong> IP-адрес, тип браузера, информация об устройстве
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <div class="auth-card-neon p-4 p-md-5">
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">3. Использование информации</h2>
-                        <p>Мы используем собранную информацию для следующих целей:</p>
-                        <div class="row g-3 mt-3">
+                    <section class="mb-5">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="section-number me-3">01</div>
+                            <h3 class="text-white mb-0 fw-black">СБОР ДАННЫХ</h3>
+                        </div>
+                        <p class="text-gray mb-4">Мы собираем только те данные, которые необходимы для качественного оформления вашего приключения. Никакого лишнего шума.</p>
+
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="privacy-icon bg-primary bg-opacity-10 text-primary me-3">✓</div>
-                                        <strong>Бронирование услуг</strong>
-                                    </div>
-                                    <p class="small mb-0 text-muted">Оформление и подтверждение туров</p>
+                                <div class="info-glass-box">
+                                    <i class="fas fa-id-card text-primary-blue mb-3"></i>
+                                    <h6 class="text-white">ФИО и контакты</h6>
+                                    <p class="text-gray small mb-0">Для связи и идентификации личности при бронировании.</p>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="privacy-icon bg-success bg-opacity-10 text-success me-3">📧</div>
-                                        <strong>Связь с клиентом</strong>
-                                    </div>
-                                    <p class="small mb-0 text-muted">Ответы на запросы и уведомления</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="privacy-icon bg-warning bg-opacity-10 text-warning me-3">🔒</div>
-                                        <strong>Безопасность</strong>
-                                    </div>
-                                    <p class="small mb-0 text-muted">Защита от мошенничества</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="privacy-icon bg-info bg-opacity-10 text-info me-3">📊</div>
-                                        <strong>Аналитика</strong>
-                                    </div>
-                                    <p class="small mb-0 text-muted">Улучшение качества услуг</p>
+                                <div class="info-glass-box">
+                                    <i class="fas fa-credit-card text-primary-blue mb-3"></i>
+                                    <h6 class="text-white">Платежные данные</h6>
+                                    <p class="text-gray small mb-0">Все транзакции защищены протоколами банковского уровня.</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">4. Защита данных</h2>
-                        <p>
-                            Мы применяем современные технические и организационные меры для защиты
-                            ваших персональных данных от несанкционированного доступа, изменения,
-                            раскрытия или уничтожения.
-                        </p>
-                        <div class="alert alert-primary mt-3">
-                            <div class="d-flex align-items-center">
-                                <div class="me-3">🔐</div>
+                    <section class="mb-5 pt-4 border-top-dark">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="section-number me-3">02</div>
+                            <h3 class="text-white mb-0 fw-black">ВАШИ ПРАВА</h3>
+                        </div>
+                        <div class="rights-list">
+                            <div class="right-item d-flex align-items-start mb-3">
+                                <i class="fas fa-check-circle text-primary-blue mt-1 me-3"></i>
                                 <div>
-                                    <strong>Важно:</strong> Все данные передаются по защищенному
-                                    SSL-соединению и хранятся на защищенных серверах.
+                                    <span class="text-white fw-bold d-block">Право быть забытым</span>
+                                    <span class="text-gray small">Вы можете запросить полное удаление вашего профиля в любой момент.</span>
+                                </div>
+                            </div>
+                            <div class="right-item d-flex align-items-start mb-3">
+                                <i class="fas fa-check-circle text-primary-blue mt-1 me-3"></i>
+                                <div>
+                                    <span class="text-white fw-bold d-block">Право на исправление</span>
+                                    <span class="text-gray small">Вы имеете полный доступ к редактированию данных в личном кабинете.</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">5. Ваши права</h2>
-                        <p>Вы имеете право:</p>
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <div class="d-flex align-items-start p-3 border-start border-3 border-primary">
-                                    <span class="text-primary fw-bold me-3">1</span>
-                                    <span>Получать информацию о том, какие ваши данные мы обрабатываем</span>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="d-flex align-items-start p-3 border-start border-3 border-success">
-                                    <span class="text-success fw-bold me-3">2</span>
-                                    <span>Требовать исправления неточных персональных данных</span>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="d-flex align-items-start p-3 border-start border-3 border-warning">
-                                    <span class="text-warning fw-bold me-3">3</span>
-                                    <span>Отозвать согласие на обработку персональных данных</span>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="d-flex align-items-start p-3 border-start border-3 border-info">
-                                    <span class="text-info fw-bold me-3">4</span>
-                                    <span>Требовать удаления ваших персональных данных</span>
-                                </div>
-                            </div>
+                    <div class="alert-neon d-flex align-items-center p-4">
+                        <div class="me-4 fs-2 text-primary-blue">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div>
+                            <p class="text-white small mb-0">Данные хранятся на защищенных серверах с использованием SSL шифрования по стандартам 2026 года. Мы заботимся о вашем цифровом следе.</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h2 class="h3 mb-3 text-primary">6. Контактная информация</h2>
-                        <p>По вопросам, связанным с обработкой персональных данных, обращайтесь:</p>
-                        <div class="row g-3 mt-3">
-                            <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <strong>Email:</strong>
-                                    <p class="mb-0">privacy@travelagency.by</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-3 bg-light rounded-3">
-                                    <strong>Телефон:</strong>
-                                    <p class="mb-0">+375 (44) 796-03-06</p>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="p-3 bg-light rounded-3">
-                                    <strong>Адрес:</strong>
-                                    <p class="mb-0">г. Гомель, ул. Рогачевская, д. 6</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="text-center mt-5">
+                        <a href="/" class="btn-more text-decoration-none">
+                            <i class="fas fa-arrow-left me-2"></i> ВЕРНУТЬСЯ НА ГЛАВНУЮ
+                        </a>
                     </div>
                 </div>
-            </div>
 
-            <div class="alert alert-success mt-5">
-                <div class="d-flex align-items-center">
-                    <div class="alert-icon me-3">✅</div>
-                    <div>
-                        <h4 class="alert-heading">Согласие с политикой</h4>
-                        <p class="mb-0">
-                            Используя наш веб-сайт и услуги, вы подтверждаете, что ознакомились
-                            с настоящей Политикой конфиденциальности и соглашаетесь с ее условиями.
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .divider {
-        margin: 1.5rem 0;
+    .privacy-hero {
+        background: radial-gradient(circle at center, rgba(0, 106, 255, 0.08) 0%, transparent 70%);
+        border-radius: 40px;
     }
 
-    .privacy-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        flex-shrink: 0;
+    .privacy-icon-glow {
+        font-size: 4rem;
+        color: #006aff;
+        text-shadow: 0 0 30px rgba(0, 106, 255, 0.5);
     }
 
-    .alert-icon {
-        font-size: 1.5rem;
+    .section-number {
+        font-size: 0.8rem;
+        background: #006aff;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 900;
     }
 
-    .card {
-        transition: transform 0.3s ease;
+    .info-glass-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 25px;
+        height: 100%;
+        transition: 0.3s;
     }
 
-        .card:hover {
-            transform: translateY(-2px);
+        .info-glass-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #006aff;
         }
 
-    .border-start {
-        border-width: 3px !important;
-    }
-
-    .privacy-content h2 {
-        position: relative;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-    }
-
-        .privacy-content h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: currentColor;
+        .info-glass-box i {
+            font-size: 1.5rem;
         }
 
-    .list-unstyled li {
-        padding-left: 0.5rem;
-        border-left: 2px solid #e9ecef;
-        margin-bottom: 0.75rem;
+    .alert-neon {
+        background: rgba(0, 106, 255, 0.05);
+        border: 1px solid rgba(0, 106, 255, 0.2);
+        border-radius: 20px;
+    }
+
+    .border-top-dark {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .text-gray {
+        color: #86868b;
+    }
+
+    .letter-spacing-sm {
+        letter-spacing: 2px;
     }
 </style>

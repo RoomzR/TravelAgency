@@ -54,9 +54,8 @@ namespace TravelAgency.BLL.Mapping
             CreateMap<NewsUpdateDTO, NewsArticle>();
 
             CreateMap<Review, ReviewDTO>()
-               .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Client.UserName))
-               .ForMember(dest => dest.TourTitle, opt => opt.MapFrom(src => src.Tour.Title))
-               .ReverseMap();
+            .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Client.UserName)) 
+            .ForMember(dest => dest.TourTitle, opt => opt.MapFrom(src => src.Tour.Title));
 
             CreateMap<ReviewCreateDTO, Review>();
 

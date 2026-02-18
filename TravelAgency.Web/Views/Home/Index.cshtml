@@ -1,388 +1,588 @@
 ﻿@model TravelAgency.Web.Models.ViewModels.HomeViewModel
 @{
-    ViewData["Title"] = "Главная - Travel Agency";
+    ViewData["Title"] = "Travel Agency | Future of Travel";
 }
 
-<section class="hero-section" style="
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.65) 0%, rgba(25, 135, 84, 0.65) 100%),
-                url('https://img.freepik.com/premium-photo/young-lovely-couple-sitting-with-manager-travel-agency-office-prepairing-summer-vacation_506452-3192.jpg?semt=ais_hybrid');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    padding: 120px 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-">
-    <div class="container position-relative z-2">
-        <div class="hero-content mx-auto" style="max-width: 800px;">
-            <h1 class="display-4 fw-bold mb-4 animate-fade-in">Откройте мир с Travel Agency</h1>
-            <p class="lead mb-4 fs-4 animate-fade-in-delay">Лучшие туры по всему миру по доступным ценам</p>
-            <p class="lead mb-4 fs-4 animate-fade-in-delay-2">Базируемся в Республике Беларусь</p>
-            <a href="@Url.Action("Index", "Tour")" class="btn btn-light btn-lg px-5 py-3 fw-bold animate-scale-in">
-                Найти тур
-            </a>
-        </div>
-    </div>
-    <div class="hero-wave" style="
-         position: absolute;
-         bottom: 0;
-         left: 0;
-         right: 0;
-         height: 100px;
-         background: url('data:image /svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="white"/></svg></div>
-</section>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 
-<section class="py-5">
-    <div class="container">
-        <div class="row g-4 text-center">
-            <div class="col-md-4">
-                <div class="stat-card p-4 rounded-4 shadow-sm border border-light h-100">
-                    <div class="stat-number display-5 fw-bold text-primary mb-2">@Model.TourCount</div>
-                    <div class="stat-label text-muted">Доступных туров</div>
-                    <div class="stat-line mt-3 mx-auto" style="width: 60px; height: 2px; background: #0d6efd;"></div>
+<div class="smooth-wrapper">
+    <section class="hero-full">
+        <div class="container-fluid p-0">
+            <div class="hero-inner">
+                <div class="hero-video-bg">
+                    <div class="gradient-overlay"></div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card p-4 rounded-4 shadow-sm border border-light h-100">
-                    <div class="stat-number display-5 fw-bold text-success mb-2">@Model.ClientCount</div>
-                    <div class="stat-label text-muted">Довольных клиентов</div>
-                    <div class="stat-line mt-3 mx-auto" style="width: 60px; height: 2px; background: #198754;"></div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card p-4 rounded-4 shadow-sm border border-light h-100">
-                    <div class="stat-number display-5 fw-bold text-warning mb-2">@Model.BookingCount</div>
-                    <div class="stat-label text-muted">Успешных бронирований</div>
-                    <div class="stat-line mt-3 mx-auto" style="width: 60px; height: 2px; background: #ffc107;"></div>
+
+                <div class="hero-content-center">
+                    <div class="tag-modern" data-aos="fade-up">Est. 2026 — Republic of Belarus</div>
+                    <h1 class="giant-title" data-aos="fade-up" data-aos-delay="200">
+                        ОТКРЫВАЙ <br>
+                        <span class="text-filled">ГОРИЗОНТЫ</span>
+                    </h1>
+
+                    <div class="hero-bottom-info" data-aos="fade-up" data-aos-delay="400">
+                        <div class="social-proof-v2">
+                            <div class="avatar-stack">
+                                <img src="https://i.pravatar.cc/100?u=4" alt="u">
+                                <img src="https://i.pravatar.cc/100?u=5" alt="u">
+                                <img src="https://i.pravatar.cc/100?u=6" alt="u">
+                                <div class="more-count">@Model.ClientCount+</div>
+                            </div>
+                            <p>Доверяют свой отдых нам</p>
+                        </div>
+                        <div class="scroll-explore">
+                            <span>Scroll to explore</span>
+                            <div class="mouse-icon"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="py-5 bg-light-subtle">
-    <div class="container">
-        <div class="section-header mb-5">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="h1 fw-bold text-primary mb-2">Горящие предложения</h2>
-                    <p class="text-muted mb-0">Специальные цены на лучшие направления</p>
-                </div>
-                <a href="@Url.Action("Index", "Tour")" class="btn btn-outline-primary btn-lg">
-                    Все туры →
-                </a>
+    <section class="py-10 bg-black" id="popular">
+        <div class="container-fluid px-lg-5">
+            <div class="section-header-modern mb-5" data-aos="fade-right">
+                <h2 class="h1 fw-black">ПОПУЛЯРНЫЕ <br> НАПРАВЛЕНИЯ</h2>
+            </div>
+
+            <div class="bento-grid-v3">
+                @for (int i = 0; i < Model.Countries.Count; i++)
+                {
+                    var country = Model.Countries[i];
+                    var delay = i * 100;
+                    <div class="bento-item-v3 @(i == 0 ? "big" : i == 3 ? "wide" : "")"
+                         data-aos="zoom-in-up" data-aos-delay="@delay">
+                        <div class="bento-img" style="background-image: url('@(country.ImageUrl ?? "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800")')"></div>
+                        <div class="bento-content">
+                            <span class="country-code">0@(i + 1)</span>
+                            <h3 class="h4">@country.Name</h3>
+                            <p class="small opacity-50">@country.Description</p>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
+    </section>
+    
+    <section class="py-10 overflow-hidden bg-black" id="reviews">
+        <div class="container-fluid px-0">
+            <div class="section-header-modern px-lg-5 mb-5" data-aos="fade-right">
+                <h2 class="h1 fw-black">ЧТО ГОВОРЯТ <br> О НАС</h2>
+            </div>
 
-        <div class="row g-4">
-            @foreach (var tour in Model.FeaturedTours)
+            @if (Model.Reviews != null && Model.Reviews.Any())
             {
-                <div class="col-md-3">
-                    <div class="card tour-card border-0 shadow-sm h-100 overflow-hidden">
-                        <div class="tour-image-wrapper position-relative">
-                            <img src="@(tour.ImageUrlsJson != null ? tour.ImageUrlsJson.Trim('[', ']', '"').Split(',')[0] : "/images/tours/default.jpg")"
-                                 class="card-img-top"
-                                 alt="@tour.Title"
-                                 style="height: 250px; object-fit: cover;">
-                            @if (tour.IsHotDeal)
+                var reviews = Model.Reviews.Where(r => r.IsApproved).ToList();
+
+                int midPoint = (int)Math.Ceiling(reviews.Count / 2.0);
+                var firstRow = reviews.Take(midPoint).ToList();
+                var secondRow = reviews.Skip(midPoint).ToList();
+
+                <div class="marquee-wrapper">
+                    <div class="marquee-content">
+                        @foreach (var review in firstRow)
+                        {
+                            <div class="review-card-modern">
+                                <div class="review-card-inner">
+                                    <div class="review-header">
+                                        <div class="review-icon">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"></path>
+                                                <circle cx="12" cy="16" r="5"></circle>
+                                                <line x1="3" y1="16" x2="5" y2="16"></line>
+                                                <line x1="19" y1="16" x2="21" y2="16"></line>
+                                            </svg>
+                                        </div>
+                                        <span class="review-tour">@review.TourTitle</span>
+                                    </div>
+                                    <p class="review-text">"@review.Text"</p>
+                                    <div class="review-rating">
+                                        @for (int i = 0; i < review.Rating; i++)
+                                        {
+                                            <span>★</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @foreach (var review in firstRow)
+                        {
+                            <div class="review-card-modern">
+                                <div class="review-card-inner">
+                                    <div class="review-header">
+                                        <div class="review-icon">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"></path>
+                                                <circle cx="12" cy="16" r="5"></circle>
+                                                <line x1="3" y1="16" x2="5" y2="16"></line>
+                                                <line x1="19" y1="16" x2="21" y2="16"></line>
+                                            </svg>
+                                        </div>
+                                        <span class="review-tour">@review.TourTitle</span>
+                                    </div>
+                                    <p class="review-text">"@review.Text"</p>
+                                    <div class="review-rating">
+                                        @for (int i = 0; i < review.Rating; i++)
+                                        {
+                                            <span>★</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+
+                @if (secondRow.Any())
+                {
+                    <div class="marquee-wrapper reverse mt-4">
+                        <div class="marquee-content">
+                            @foreach (var review in secondRow)
                             {
-                                <div class="hot-badge position-absolute top-0 start-0 bg-danger text-white px-3 py-2 m-3 rounded-2">
-                                    <strong>Горящий</strong>
+                                <div class="review-card-modern">
+                                    <div class="review-card-inner">
+                                        <div class="review-header">
+                                            <div class="review-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"></path>
+                                                    <circle cx="12" cy="16" r="5"></circle>
+                                                    <line x1="3" y1="16" x2="5" y2="16"></line>
+                                                    <line x1="19" y1="16" x2="21" y2="16"></line>
+                                                </svg>
+                                            </div>
+                                            <span class="review-tour">@review.TourTitle</span>
+                                        </div>
+                                        <p class="review-text">"@review.Text"</p>
+                                        <div class="review-rating">
+                                            @for (int i = 0; i < review.Rating; i++)
+                                            {
+                                                <span>★</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             }
-                            <div class="tour-overlay position-absolute bottom-0 start-0 end-0 p-3 text-white"
-                                 style="background: linear-gradient(transparent, rgba(0,0,0,0.8));">
-                                <div class="tour-location small">@tour.Country?.Name, @tour.City?.Name</div>
-                            </div>
-                        </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-3">@tour.Title</h5>
-                            <div class="tour-details mb-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="badge bg-light text-dark me-2">📅 @tour.DurationDays дн.</span>
-                                    <span class="badge bg-light text-dark">⭐ @tour.HotelCategory?.Name</span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-                                <div>
-                                    <div class="tour-price-old text-muted text-decoration-line-through small">
-                                        @((tour.Price * 1.2m).ToString("C"))
+
+                            @foreach (var review in secondRow)
+                            {
+                                <div class="review-card-modern">
+                                    <div class="review-card-inner">
+                                        <div class="review-header">
+                                            <div class="review-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"></path>
+                                                    <circle cx="12" cy="16" r="5"></circle>
+                                                    <line x1="3" y1="16" x2="5" y2="16"></line>
+                                                    <line x1="19" y1="16" x2="21" y2="16"></line>
+                                                </svg>
+                                            </div>
+                                            <span class="review-tour">@review.TourTitle</span>
+                                        </div>
+                                        <p class="review-text">"@review.Text"</p>
+                                        <div class="review-rating">
+                                            @for (int i = 0; i < review.Rating; i++)
+                                            {
+                                                <span>★</span>
+                                            }
+                                        </div>
                                     </div>
-                                    <div class="tour-price-new h4 text-primary fw-bold mb-0">@tour.Price.ToString("C")</div>
                                 </div>
-                                <a href="@Url.Action("Details", "Tour", new { id = tour.Id })"
-                                   class="btn btn-primary btn-sm px-3 py-2">
-                                    Подробнее
-                                </a>
-                            </div>
+                            }
                         </div>
                     </div>
-                </div>
+                }
             }
-        </div>
-    </div>
-</section>
-
-<section class="py-5">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="h1 fw-bold text-primary mb-3">Популярные направления</h2>
-            <p class="lead text-muted mx-auto" style="max-width: 700px;">
-                Откройте для себя самые востребованные направления для путешествий
-            </p>
-        </div>
-
-        <div class="row g-4">
-            @foreach (var country in Model.Countries)
+            else
             {
-                <div class="col-md-4">
-                    <div class="destination-card card border-0 overflow-hidden shadow-hover h-100">
-                        <div class="position-relative">
-                            <img src="@(country.ImageUrl ?? "/images/countries/default.jpg")"
-                                 class="card-img-top destination-image"
-                                 alt="@country.Name"
-                                 style="height: 300px; object-fit: cover;">
-                            <div class="destination-overlay"></div>
-                            <div class="destination-content position-absolute bottom-0 start-0 end-0 p-4 text-white">
-                                <h3 class="h4 fw-bold mb-2">@country.Name</h3>
-                                <p class="mb-0 small opacity-90">
-                                    @(country.Description?.Length > 80 ? country.Description.Substring(0, 80) + "..." : country.Description)
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-center text-muted">Отзывов пока нет, но скоро они появятся!</p>
             }
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="py-5 bg-light-subtle">
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h2 class="h1 fw-bold text-primary mb-3">Почему выбирают нас</h2>
-            <p class="lead text-muted mx-auto" style="max-width: 700px;">
-                Наши ключевые преимущества, которые делают путешествие с нами особенным
-            </p>
+    <section class="cta-full" data-aos="fade-up">
+        <div class="cta-content">
+            <h2 class="display-3 fw-black mb-4">ГОТОВЫ НАЧАТЬ?</h2>
+            <a href="@Url.Action("Index", "Tour")" class="btn-ultra">
+                ПОДОБРАТЬ ТУР
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </a>
         </div>
+    </section>
+</div>
 
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-3">
-                <div class="benefit-card text-center p-4">
-                    <div class="benefit-icon-img mb-4 mx-auto">
-                        <img src="/images/icons/shield.png" alt="Безопасность" class="img-fluid"
-                             style="width: 80px; height: 80px; object-fit: contain;">
-                    </div>
-                    <h4 class="h5 fw-bold mb-3">Безопасность</h4>
-                    <p class="text-muted mb-0">Гарантия безопасности вашего отдыха</p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="benefit-card text-center p-4">
-                    <div class="benefit-icon-img mb-4 mx-auto">
-                        <img src="/images/icons/support.png" alt="Поддержка 24/7" class="img-fluid"
-                             style="width: 80px; height: 80px; object-fit: contain;">
-                    </div>
-                    <h4 class="h5 fw-bold mb-3">Поддержка 24/7</h4>
-                    <p class="text-muted mb-0">Круглосуточная поддержка клиентов</p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="benefit-card text-center p-4">
-                    <div class="benefit-icon-img mb-4 mx-auto">
-                        <img src="/images/icons/price-tag.png" alt="Лучшие цены" class="img-fluid"
-                             style="width: 80px; height: 80px; object-fit: contain;">
-                    </div>
-                    <h4 class="h5 fw-bold mb-3">Лучшие цены</h4>
-                    <p class="text-muted mb-0">Гарантия лучшей цены на рынке</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="py-5">
-    <div class="container">
-        <div class="section-header mb-5">
-            <h2 class="h1 fw-bold text-primary mb-3">Новости и советы</h2>
-            <p class="text-muted">Полезная информация для путешественников</p>
-        </div>
-
-        <div class="row g-4">
-            @foreach (var news in Model.NewsArticles)
-            {
-                <div class="col-md-4">
-                    <div class="card news-card border-0 shadow-sm h-100 overflow-hidden">
-                        <div class="news-image-wrapper position-relative">
-                            <img src="@(news.ImageUrl ?? "/images/news/default.jpg")"
-                                 class="card-img-top"
-                                 alt="@news.Title"
-                                 style="height: 200px; object-fit: cover;">
-                            <div class="news-date position-absolute top-0 end-0 bg-primary text-white px-3 py-2 m-3 rounded-2">
-                                <strong>@news.CreatedDate.ToString("dd.MM")</strong>
-                            </div>
-                        </div>
-                        <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-3">@news.Title</h5>
-                            <p class="card-text text-muted mb-4">
-                                @(news.Content.Length > 120 ? news.Content.Substring(0, 120) + "..." : news.Content)
-                            </p>
-                            <a href="#" class="btn btn-link text-primary fw-bold p-0">
-                                Читать далее →
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-</section>
-
-<section class="py-5 text-white" style="background: linear-gradient(135deg, #0d6efd 0%, #198754 100%);">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h2 class="h1 fw-bold mb-3">Готовы к путешествию?</h2>
-                <p class="lead mb-0">Забронируйте свой идеальный тур прямо сейчас</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="@Url.Action("Index", "Tour")" class="btn btn-light btn-lg px-5 py-3 fw-bold">
-                    Начать поиск тура
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,
+        once: false,
+        mirror: true
+    });
+</script>
 
 <style>
-    .animate-fade-in {
-        animation: fadeIn 1s ease-out;
-    }
-
-    .animate-fade-in-delay {
-        animation: fadeIn 1s ease-out 0.3s both;
-    }
-
-    .animate-fade-in-delay-2 {
-        animation: fadeIn 1s ease-out 0.6s both;
-    }
-
-    .animate-scale-in {
-        animation: scaleIn 0.5s ease-out 0.9s both;
-    }
-
-    .stat-card {
-        transition: all 0.3s ease;
-        background: white;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
-        }
-
-    .tour-card {
+    .review-card-modern {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 25px;
+        min-width: 350px;
+        margin: 0 15px;
         transition: all 0.3s ease;
     }
 
-        .tour-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-        }
-
-    .tour-image-wrapper::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 100%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .tour-card:hover .tour-image-wrapper::after {
-        opacity: 1;
-    }
-
-    .destination-card {
-        transition: all 0.3s ease;
-    }
-
-        .destination-card:hover {
-            transform: scale(1.02);
-        }
-
-    .destination-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7) 100%);
-    }
-
-    .benefit-card {
-        transition: all 0.3s ease;
-    }
-
-        .benefit-card:hover {
+        .review-card-modern:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 106, 255, 0.3);
             transform: translateY(-5px);
         }
 
-    .benefit-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
+    .r-top {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .r-avatar-silhouette {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        color: var(--primary-blue);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .news-card {
-        transition: all 0.3s ease;
+    .r-meta {
+        flex: 1;
     }
 
-        .news-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-        }
-
-    .bg-light-subtle {
-        background-color: #f8f9fa !important;
+    .r-trip {
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        letter-spacing: 0.5px;
     }
 
-    .shadow-hover {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .r-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #fff;
     }
 
-        .shadow-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
-        }
+    .r-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 15px;
+        font-style: italic;
+    }
 
-    .section-header {
+    .r-rating {
+        display: flex;
+        gap: 4px;
+        color: #FFD700;
+        font-size: 1.1rem;
+    }
+
+    .marquee-wrapper {
+        width: 100%;
+        overflow: hidden;
         position: relative;
-        padding-bottom: 20px;
     }
 
-        .section-header::after {
+        .marquee-wrapper::before,
+        .marquee-wrapper::after {
             content: '';
             position: absolute;
+            top: 0;
             bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, #0d6efd, #198754);
+            width: 100px;
+            z-index: 2;
+            pointer-events: none;
         }
 
-        .section-header.text-center::after {
-            left: 50%;
+        .marquee-wrapper::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-black), transparent);
+        }
+
+        .marquee-wrapper::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-black), transparent);
+        }
+
+    .marquee-content {
+        display: flex;
+        animation: scroll 40s linear infinite;
+        width: fit-content;
+    }
+
+    .marquee-wrapper.reverse .marquee-content {
+        animation: scroll-reverse 40s linear infinite;
+    }
+
+    @@keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
             transform: translateX(-50%);
         }
+    }
+
+    @@keyframes scroll-reverse {
+        0% {
+            transform: translateX(-50%);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .review-card-modern {
+            min-width: 280px;
+            padding: 20px;
+        }
+
+        .r-text {
+            font-size: 0.9rem;
+        }
+    }
+
+    :root {
+        --primary-blue: #006aff;
+        --bg-black: #050505;
+        --text-gray: #86868b;
+    }
+
+    body {
+        background-color: var(--bg-black);
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hero-full {
+        height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: radial-gradient(circle at center, #111 0%, #050505 100%);
+    }
+
+    .hero-content-center {
+        text-align: center;
+        z-index: 10;
+    }
+
+    .giant-title {
+        font-size: clamp(3rem, 15vw, 12rem);
+        font-weight: 900;
+        line-height: 0.8;
+        letter-spacing: -5px;
+        margin: 20px 0;
+    }
+
+    .text-filled {
+        color: var(--primary-blue);
+        text-shadow: 0 0 50px rgba(0, 106, 255, 0.4);
+    }
+
+    .tag-modern {
+        font-size: 0.9rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--text-gray);
+    }
+
+    .hero-bottom-info {
+        position: absolute;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 50px;
+    }
+
+    .social-proof-v2 {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-align: left;
+    }
+
+    .avatar-stack {
+        display: flex;
+    }
+
+        .avatar-stack img, .more-count {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-black);
+            margin-left: -12px;
+        }
+
+    .more-count {
+        background: var(--primary-blue);
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .bento-grid-v3 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: 300px;
+        gap: 20px;
+    }
+
+    .bento-item-v3 {
+        position: relative;
+        border-radius: 32px;
+        overflow: hidden;
+        background: #111;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+        .bento-item-v3.big {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .bento-item-v3.wide {
+            grid-column: span 2;
+        }
+
+    .bento-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.6;
+        transition: 0.8s;
+    }
+
+    .bento-item-v3:hover .bento-img {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+
+    .bento-item-v3:hover {
+        border-color: var(--primary-blue);
+        transform: translateY(-10px);
+    }
+
+    .bento-content {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        right: 30px;
+        z-index: 2;
+    }
+
+    .country-code {
+        font-size: 0.8rem;
+        color: var(--primary-blue);
+        font-weight: bold;
+    }
+
+    .cta-full {
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to bottom, #050505, #001a3d);
+        text-align: center;
+    }
+
+    .btn-ultra {
+        background: var(--primary-blue);
+        color: #fff;
+        padding: 25px 60px;
+        border-radius: 100px;
+        font-size: 1.2rem;
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        transition: 0.4s;
+    }
+
+        .btn-ultra:hover {
+            background: #fff;
+            color: var(--primary-blue);
+            box-shadow: 0 0 40px rgba(255,255,255,0.2);
+        }
+
+    .mouse-icon {
+        width: 25px;
+        height: 40px;
+        border: 2px solid var(--text-gray);
+        border-radius: 20px;
+        position: relative;
+        margin-top: 10px;
+    }
+
+        .mouse-icon::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 8px;
+            width: 4px;
+            height: 8px;
+            background: var(--primary-blue);
+            transform: translateX(-50%);
+            border-radius: 2px;
+            animation: scrollAnim 2s infinite;
+        }
+
+    @@keyframes scrollAnim {
+        0% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translate(-50%, 20px);
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .bento-grid-v3 {
+            grid-template-columns: 1fr;
+            grid-auto-rows: 250px;
+        }
+
+        .bento-item-v3.big, .bento-item-v3.wide {
+            grid-column: span 1;
+            grid-row: span 1;
+        }
+
+        .hero-bottom-info {
+            flex-direction: column;
+            gap: 30px;
+        }
+    }
 </style>

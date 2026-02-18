@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TravelAgency.BLL.DTOs;
+using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Data;
 using TravelAgency.DAL.Entities;
 using TravelAgency.DAL.Enums;
-using TravelAgency.DAL.Data;
 using TravelAgency.Web.Models;
 using TravelAgency.Web.Models.ViewModels;
 
@@ -14,16 +16,22 @@ namespace TravelAgency.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IReviewService _reviewService;
+
 
         public HomeController(
             ApplicationDbContext context,
             ILogger<HomeController> logger,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IReviewService reviewService)
         {
             _context = context;
             _logger = logger;
             _userManager = userManager;
+            _reviewService = reviewService;
         }
+
+
 
         public async Task<IActionResult> Index()
         {
@@ -60,7 +68,9 @@ namespace TravelAgency.Web.Controllers
                 NewsArticles = news,
                 TourCount = await _context.Tours.CountAsync(t => t.IsActive),
                 ClientCount = await _context.Users.CountAsync(),
-                BookingCount = await _context.Bookings.CountAsync()
+                BookingCount = await _context.Bookings.CountAsync(),
+
+                Reviews = await _reviewService.GetAllApprovedReviewsAsync(12)
             };
 
             return View(viewModel);

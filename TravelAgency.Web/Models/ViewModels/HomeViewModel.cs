@@ -1,5 +1,6 @@
-﻿using TravelAgency.DAL.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TravelAgency.BLL.DTOs;
+using TravelAgency.DAL.Entities;
 
 namespace TravelAgency.Web.Models.ViewModels
 {
@@ -12,5 +13,7 @@ namespace TravelAgency.Web.Models.ViewModels
         public int TourCount { get; set; }
         public int ClientCount { get; set; }
         public int BookingCount { get; set; }
+
+        public IEnumerable<ReviewDTO> Reviews { get; set; } = new List<ReviewDTO>();
     }
 }

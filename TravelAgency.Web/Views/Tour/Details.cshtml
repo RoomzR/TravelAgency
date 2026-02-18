@@ -3,526 +3,301 @@
     ViewData["Title"] = Model?.Title ?? "Детали тура";
 }
 
-@if (Model == null)
-{
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card border-0 shadow-sm text-center p-5">
-                    <div class="mb-4" style="width: 80px; height: 80px; background-color: #f8d7da; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-                        <div style="width: 40px; height: 40px; background-color: #dc3545; border-radius: 50%; position: relative;">
-                        </div>
-                    </div>
-                    <h2 class="h3 mb-3">Тур не найден</h2>
-                    <p class="text-muted mb-4">Запрашиваемый тур не существует или был удален</p>
-                    <a href="@Url.Action("Index")" class="btn btn-primary px-4">
-                        Вернуться к списку
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+@using System.Globalization
+@{
+    var belarusCulture = new CultureInfo("be-BY");
 }
-else
-{
-    <div class="container py-4">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb bg-light rounded-3 p-3">
-                <li class="breadcrumb-item">
-                    <a href="/" class="text-decoration-none text-primary">Главная</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="@Url.Action("Index")" class="text-decoration-none text-primary">Туры</a>
-                </li>
-                <li class="breadcrumb-item active text-dark fw-semibold">@Model.Title</li>
-            </ol>
-        </nav>
 
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-4">
-                            <div class="flex-grow-1 me-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <h1 class="h2 fw-bold mb-0 me-3">@Model.Title</h1>
-                                    @if (Model.IsHotDeal)
-                                    {
-                                        <span class="badge bg-danger text-white px-3 py-2 rounded-3 fw-bold">
-                                            ГОРЯЩИЙ ТУР
-                                        </span>
-                                    }
-                                </div>
+<div class="smooth-wrapper bg-black py-5">
+    @if (Model == null)
+    {
+        <div class="container text-center py-5" data-aos="zoom-in">
+            <div class="error-glow-container mb-4">
+                <i class="fas fa-map-marked-alt text-danger-neon display-1"></i>
+            </div>
+            <h2 class="text-white fw-black h1">МАРШРУТ ПОТЕРЯН</h2>
+            <p class="text-gray mb-5">Запрашиваемый тур не существует или был перемещен в архив.</p>
+            <a href="@Url.Action("Index")" class="btn-ultra">
+                <i class="fas fa-arrow-left me-2"></i> К СПИСКУ ТУРОВ
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="container">
 
-                                <div class="tour-meta mb-3">
-                                    <span class="badge bg-primary bg-opacity-10 text-primary me-2 px-3 py-2">
-                                        @Model.TourTypeName
-                                    </span>
-                                    <span class="badge bg-success bg-opacity-10 text-success me-2 px-3 py-2">
-                                        @Model.HotelCategoryName
-                                    </span>
-                                    @if (Model.DiscountPercent > 0)
-                                    {
-                                        <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
-                                            Скидка @Model.DiscountPercent%
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-
-                            <div class="tour-pricing text-end">
-                                @if (Model.DiscountPercent > 0 && Model.OriginalPrice.HasValue)
-                                {
-                                    <div class="original-price text-muted text-decoration-line-through mb-1">
-                                        @Model.OriginalPrice.Value.ToString("C")
-                                    </div>
-                                }
-                                <div class="current-price h2 fw-bold text-primary mb-0">
-                                    @Model.Price.ToString("C")
-                                </div>
-                                <div class="price-per-person text-muted small">
-                                    @(Model.MaxPeopleCount > 1 ? $"за {Model.MaxPeopleCount} чел." : "за человека")
-                                </div>
-                            </div>
+            <div class="row g-5">
+                <div class="col-lg-8" data-aos="fade-right">
+                    <div class="tour-header mb-4">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <span class="tag-modern">@Model.TourTypeName</span>
+                            @if (Model.IsHotDeal)
+                            {
+                                <span class="badge-hot-neon"><i class="fas fa-fire me-1"></i> ГОРЯЩИЙ ТУР</span>
+                            }
                         </div>
+                        <h1 class="giant-title-mini text-white">@Model.Title</h1>
+                        <p class="text-gray lead"><i class="fas fa-map-marker-alt text-primary-blue me-2"></i>@Model.CountryName, @Model.CityName</p>
+                    </div>
 
+                    <div class="gallery-wrapper mb-5">
                         @if (!string.IsNullOrEmpty(Model.ImageUrlsJson))
                         {
                             var images = Model.ImageUrlsJson.Trim('[', ']', '"').Split(',');
-                            if (images.Length > 0)
-                            {
-                                <div class="tour-gallery mb-4">
-                                    <div class="main-image position-relative rounded-3 overflow-hidden mb-3">
-                                        <img src="@images[0].Trim()"
-                                             class="img-fluid w-100 tour-main-image"
-                                             alt="@Model.Title"
-                                             style="height: 400px; object-fit: cover;"
-                                             onerror="this.src='/images/tours/default.jpg'">
-                                        @if (images.Length > 1)
-                                        {
-                                            <div class="image-count position-absolute bottom-0 end-0 m-3 bg-dark bg-opacity-75 text-white px-3 py-2 rounded-3">
-                                                <span>+@(images.Length - 1) фото</span>
-                                            </div>
-                                        }
-                                    </div>
-
-                                    @if (images.Length > 1)
-                                    {
-                                        <div class="thumbnail-images d-flex gap-2">
-                                            @for (int i = 1; i < Math.Min(images.Length, 5); i++)
-                                            {
-                                                <div class="thumbnail-image flex-shrink-0" style="width: 80px; height: 60px;">
-                                                    <img src="@images[i].Trim()"
-                                                         class="img-fluid w-100 h-100 rounded-2"
-                                                         style="object-fit: cover; cursor: pointer;"
-                                                         onclick="changeMainImage(this.src)"
-                                                         alt="Тур @Model.Title - фото @(i + 1)">
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        }
-
-                        <div class="tour-description mb-4">
-                            <h3 class="h4 mb-3 position-relative">
-                                <span class="bg-white px-3">Описание тура</span>
-                                <div class="position-absolute top-50 start-0 end-0 border-top z-n1"></div>
-                            </h3>
-                            <div class="description-content lead text-muted">
-                                @Html.Raw(Model.Description.Replace("\n", "<br>"))
+                            <div class="main-image-frame mb-3">
+                                <img src="@images[0].Trim()" id="mainView" class="img-fluid rounded-4" alt="@Model.Title">
                             </div>
+                            <div class="thumbnails-grid d-flex gap-3">
+                                @for (int i = 0; i < Math.Min(images.Length, 4); i++)
+                                {
+                                    <div class="thumb-item @(i == 0 ? "active" : "")" onclick="updatePreview(this, '@images[i].Trim()')">
+                                        <img src="@images[i].Trim()" class="rounded-3">
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row g-3 mb-5">
+                        <div class="col-md-4">
+                            <div class="card-modern p-3 text-center">
+                                <i class="fas fa-calendar-alt text-primary-blue mb-2"></i>
+                                <div class="small text-gray">Вылет</div>
+                                <div class="text-white fw-bold">@Model.StartDate.ToString("dd MMM yyyy")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card-modern p-3 text-center">
+                                <i class="fas fa-moon text-primary-blue mb-2"></i>
+                                <div class="small text-gray">Длительность</div>
+                                <div class="text-white fw-bold">@Model.DurationDays ночей</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card-modern p-3 text-center">
+                                <i class="fas fa-hotel text-primary-blue mb-2"></i>
+                                <div class="small text-gray">Отель</div>
+                                <div class="text-white fw-bold">@Model.HotelCategoryName</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="description-section">
+                        <h3 class="text-white mb-4 fw-black">ОПИСАНИЕ ТУРА</h3>
+                        <div class="text-gray lead" style="line-height: 1.8;">
+                            @Html.Raw(Model.Description.Replace("\n", "<br>"))
                         </div>
                     </div>
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="card border-start border-4 border-success h-100">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="detail-icon bg-success bg-opacity-10 text-success me-3" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <div style="width: 24px; height: 24px; background-color: #198754; border-radius: 50%;"></div>
-                                    </div>
-                                    <h4 class="h5 mb-0 fw-bold">Местонахождение</h4>
-                                </div>
-                                <div class="detail-list">
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 12px; height: 12px; background-color: #198754; border-radius: 50%; margin: 4px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Страна:</strong> @Model.CountryName
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 16px; background-color: #198754; border-radius: 3px; margin: 2px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Город:</strong> @Model.CityName
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 12px; background-color: #198754; border-radius: 2px; margin: 4px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Отель:</strong> @Model.HotelCategoryName
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 16px; background-color: #198754; border-radius: 2px; margin: 2px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Тип тура:</strong> @Model.TourTypeName
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card border-start border-4 border-warning h-100">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="detail-icon bg-warning bg-opacity-10 text-warning me-3" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                        <div style="width: 24px; height: 24px; background-color: #ffc107; border-radius: 4px;"></div>
-                                    </div>
-                                    <h4 class="h5 mb-0 fw-bold">Даты и доступность</h4>
-                                </div>
-                                <div class="detail-list">
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 16px; background-color: #ffc107; border-radius: 50%; margin: 2px auto; position: relative;">
-                                              
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <strong>Дата начала:</strong> @Model.StartDate.ToString("dd.MM.yyyy")
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 16px; background-color: #ffc107; border-radius: 3px; margin: 2px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Продолжительность:</strong> @Model.DurationDays дней
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center mb-3">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 14px; height: 14px; background-color: #ffc107; border-radius: 50%; margin: 3px auto;"></div>
-                                        </div>
-                                        <div>
-                                            <strong>Места:</strong>
-                                            <span class="availability-badge @(Model.AvailablePlaces > 0 ? "available" : "sold-out")">
-                                                @Model.AvailablePlaces из @Model.MaxPeopleCount
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="detail-item d-flex align-items-center">
-                                        <div class="me-3" style="width: 20px; height: 20px;">
-                                            <div style="width: 16px; height: 16px; background-color: #ffc107; border-radius: 50%; margin: 2px auto; position: relative;">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <strong>Статус:</strong>
-                                            <span class="status-badge @(Model.IsActive ? "active" : "inactive")">
-                                                @(Model.IsActive ? "Активный" : "Неактивный")
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="booking-card card border-0 shadow-lg rounded-4">
-                    <div class="card-header bg-gradient-primary text-white py-4 rounded-top-4">
-                        <h4 class="h3 mb-0 text-center fw-bold">Бронирование</h4>
-                    </div>
-                    <div class="card-body p-4">
-                        @if (Model.AvailablePlaces <= 0)
-                        {
-                            <div class="alert alert-danger border-0 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="alert-icon me-3" style="width: 24px; height: 24px; background-color: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    </div>
-                                    <div>
-                                        <strong>Все места забронированы</strong>
-                                        <p class="mb-0 small">Пожалуйста, выберите другой тур</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-success border-0 mb-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="alert-icon me-3" style="width: 24px; height: 24px; background-color: #198754; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
-                                  
-                                    </div>
-                                    <div>
-                                        <strong>Доступно мест: @Model.AvailablePlaces</strong>
-                                        @if (Model.AvailablePlaces <= 3)
-                                        {
-                                            <p class="mb-0 small text-danger fw-bold">Осталось мало мест!</p>
-                                        }
-                                    </div>
-                                </div>
+                <div class="col-lg-4" data-aos="fade-left">
+                    <div class="booking-sticky">
+                        <div class="card-modern p-4 border-primary-glow">
+                            <div class="price-block mb-4">
+                                @if (Model.DiscountPercent > 0)
+                                {
+                                    <span class="text-danger text-decoration-line-through small opacity-50">@Model.OriginalPrice?.ToString("C")</span>
+                                    <div class="discount-tag">-@Model.DiscountPercent%</div>
+                                }
+                                <div class="h1 text-white fw-black mb-0">@Model.Price.ToString("C", belarusCulture)</div>
+                                <div class="text-gray small">за @(Model.MaxPeopleCount > 1 ? $"{Model.MaxPeopleCount} чел." : "человека")</div>
                             </div>
 
-                            <form method="post" action="@Url.Action("Create", "Booking")" class="booking-form">
+                            <form asp-controller="Booking" asp-action="Create" method="post" class="modern-form">
                                 <input type="hidden" name="tourId" value="@Model.Id" />
 
                                 <div class="mb-4">
-                                    <label class="form-label fw-bold mb-2">
-                                        Количество человек
-                                    </label>
-                                    <div class="people-counter">
-                                        <select name="peopleCount" class="form-select form-select-lg py-3" required>
-                                            @for (int i = 1; i <= Math.Min(Model.AvailablePlaces ?? 10, 10); i++)
-                                            {
-                                                <option value="@i">@i @(i == 1 ? "человек" : i <= 4 ? "человека" : "человек")</option>
-                                            }
-                                        </select>
-                                    </div>
+                                    <label class="text-white small fw-bold mb-2">КОЛИЧЕСТВО ПУТЕШЕСТВЕННИКОВ</label>
+                                    <select name="peopleCount" class="form-select modern-input">
+                                        @for (int i = 1; i <= Math.Min(Model.AvailablePlaces ?? 10, 10); i++)
+                                        {
+                                            <option value="@i">@i @(i == 1 ? "человек" : "человека")</option>
+                                        }
+                                    </select>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold mb-2">
-                                        Промокод
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="text"
-                                               name="promoCode"
-                                               class="form-control form-control-lg"
-                                               placeholder="Введите промокод">
-                                        <button type="button" class="btn btn-outline-primary" onclick="applyPromoCode()">
-                                            Применить
-                                        </button>
-                                    </div>
+                                <div class="status-indicator mb-4 @(Model.AvailablePlaces <= 3 ? "text-danger-neon" : "text-success-neon")">
+                                    <i class="fas fa-bolt me-2"></i>
+                                    @(Model.AvailablePlaces > 0 ? $"Доступно мест: {Model.AvailablePlaces}" : "Мест нет")
                                 </div>
-
-                                <div class="total-price mb-4">
-                                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3">
-                                        <span class="fw-bold">Итого:</span>
-                                        <span class="h4 fw-bold text-primary mb-0">@Model.Price.ToString("C")</span>
-                                    </div>
-                                </div>
-
 
                                 @if (User.Identity?.IsAuthenticated == true)
                                 {
-                                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold mb-3">
-                                        Забронировать сейчас
-                                    </button>
+                                    <button type="submit" class="btn-login-neon w-100 py-3 mb-3">ЗАБРОНИРОВАТЬ</button>
                                 }
                                 else
                                 {
                                     <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
-                                       class="btn btn-primary btn-lg w-100 py-3 fw-bold mb-3">
-                                        Войти для бронирования
-                                    </a>
+                                       class="btn-ultra w-100 justify-content-center mb-3">ВОЙТИ ДЛЯ БРОНИ</a>
                                 }
                             </form>
-                        }
 
-                        <div class="contact-info border-top pt-4">
-                            <h5 class="h6 fw-bold mb-3">Нужна помощь?</h5>
-                            <div class="contact-item d-flex align-items-center mb-3">
-                                <div class="contact-icon bg-primary bg-opacity-10 text-primary me-3" style="width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <div style="width: 20px; height: 20px; background-color: #0d6efd; border-radius: 50%; position: relative;">
-                                        
-                                    </div>
-                                </div>
+                            <div class="text-center">
+                                <span class="text-gray small"><i class="fas fa-shield-alt me-2"></i>Гарантия безопасной оплаты</span>
+                            </div>
+                        </div>
+
+                        <div class="card-modern p-4 mt-4 bg-primary-gradient">
+                            <h5 class="text-white fw-bold mb-3">Есть вопросы?</h5>
+                            <div class="d-flex align-items-center text-white">
+                                <div class="icon-circle me-3"><i class="fas fa-phone-alt"></i></div>
                                 <div>
-                                    <small class="text-muted">Телефон поддержки</small>
+                                    <div class="small opacity-75">Круглосуточная линия</div>
                                     <div class="fw-bold">+375 (44) 796-03-06</div>
                                 </div>
                             </div>
-                            <div class="contact-item d-flex align-items-center">
-                                <div class="contact-icon bg-success bg-opacity-10 text-success me-3" style="width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <div style="width: 20px; height: 20px; background-color: #198754; border-radius: 50%; position: relative;">
-                                    </div>
-                                </div>
-                                <div>
-                                    <small class="text-muted">Время работы</small>
-                                    <div class="fw-bold">Поддержка 24/7</div>
-                                </div>
-                            </div>
                         </div>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <div class="d-flex gap-2 mt-4">
+                                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-outline-warning w-100 rounded-pill">Правка</a>
+                                <form action="@Url.Action("Delete")" method="post" class="w-100">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button class="btn btn-outline-danger w-100 rounded-pill" onclick="return confirm('Удалить?')">Удалить</button>
+                                </form>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
-
-        @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Admin") || User.IsInRole("Manager")))
-        {
-            <div class="admin-actions mt-5 pt-4 border-top">
-                <h5 class="h6 fw-bold mb-3 text-muted">Управление туром</h5>
-                <div class="d-flex gap-2">
-                    <a href="@Url.Action("Edit", new { id = Model.Id })"
-                       class="btn btn-warning px-4">
-                        Редактировать
-                    </a>
-                    <form method="post" action="@Url.Action("Delete")"
-                          onsubmit="return confirmDelete()" class="d-inline">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn btn-danger px-4">
-                            Удалить
-                        </button>
-                    </form>
-                </div>
-            </div>
-        }
-    </div>
-}
+    }
+</div>
 
 <style>
-    .breadcrumb {
-        background: linear-gradient(90deg, rgba(13, 110, 253, 0.1) 0%, rgba(25, 135, 84, 0.1) 100%);
-        border-radius: 12px;
+    .bg-black {
+        background-color: #050505 !important;
     }
 
-    .badge-hot {
-        font-size: 0.7rem;
-        letter-spacing: 0.5px;
+    .text-primary-blue {
+        color: #006aff;
     }
 
-    .tour-gallery .main-image {
-        transition: transform 0.3s ease;
+    .text-danger-neon {
+        color: #ff4d4d;
+        text-shadow: 0 0 15px rgba(255,77,77,0.3);
     }
 
-        .tour-gallery .main-image:hover {
-            transform: scale(1.01);
+    .text-success-neon {
+        color: #00ff88;
+        text-shadow: 0 0 15px rgba(0,255,136,0.3);
+    }
+
+    .modern-breadcrumb {
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(10px);
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+        .modern-breadcrumb a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            transition: 0.3s;
         }
 
-    .thumbnail-image {
-        transition: all 0.3s ease;
+            .modern-breadcrumb a:hover {
+                color: #006aff;
+            }
+
+    .card-modern {
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        transition: 0.3s;
+    }
+
+    .main-image-frame {
+        height: 500px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 32px;
+    }
+
+        .main-image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .thumb-item {
+        width: 100px;
+        height: 70px;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: 0.3s;
+        border-radius: 12px;
+        overflow: hidden;
         border: 2px solid transparent;
     }
 
-        .thumbnail-image:hover {
-            border-color: #0d6efd;
-            transform: scale(1.05);
+        .thumb-item.active, .thumb-item:hover {
+            opacity: 1;
+            border-color: #006aff;
         }
 
-        .thumbnail-image.active {
-            border-color: #0d6efd;
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-    .availability-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
+    .badge-hot-neon {
+        background: linear-gradient(45deg, #ff4d4d, #f9cb28);
+        padding: 6px 16px;
+        border-radius: 100px;
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.75rem;
+        box-shadow: 0 5px 15px rgba(255,77,77,0.4);
     }
 
-        .availability-badge.available {
-            background: rgba(25, 135, 84, 0.1);
-            color: #198754;
-        }
-
-        .availability-badge.sold-out {
-            background: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-        }
-
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
+    .modern-input {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: #fff !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
     }
 
-        .status-badge.active {
-            background: rgba(25, 135, 84, 0.1);
-            color: #198754;
-        }
-
-        .status-badge.inactive {
-            background: rgba(108, 117, 125, 0.1);
-            color: #6c757d;
-        }
-
-    .booking-card {
+    .booking-sticky {
         position: sticky;
-        top: 20px;
-        z-index: 100;
+        top: 100px;
     }
 
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #0d6efd 0%, #198754 100%);
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .bg-primary-gradient {
+        background: linear-gradient(135deg, #006aff 0%, #003399 100%);
+        border: none;
     }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
-        }
-
-    .btn {
-        transition: all 0.3s ease;
+    .discount-tag {
+        display: inline-block;
+        background: #ff4d4d;
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
     }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-    .detail-icon {
-        flex-shrink: 0;
-    }
-
-    .admin-actions {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 12px;
-    }
-
-    .detail-item {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-
-        .detail-item:last-child {
-            border-bottom: none;
-        }
 </style>
 
 <script>
-    function changeMainImage(src) {
-        document.querySelector('.tour-main-image').src = src;
-
-        document.querySelectorAll('.thumbnail-image').forEach(el => {
-            el.classList.remove('active');
-        });
-
-        event.currentTarget.parentElement.classList.add('active');
-    }
-
-    function applyPromoCode() {
-        const promoInput = document.querySelector('input[name="promoCode"]');
-        const promoCode = promoInput.value.trim();
-
-        if (promoCode) {
-            alert('Промокод ' + promoCode + ' применен!');
-        } else {
-            alert('Введите промокод');
-        }
-    }
-
-    function confirmDelete() {
-        return confirm('Вы уверены, что хотите удалить этот тур? Это действие нельзя отменить.');
+    function updatePreview(el, src) {
+        document.getElementById('mainView').src = src;
+        document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
     }
 </script>

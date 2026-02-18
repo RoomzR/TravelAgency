@@ -24,6 +24,25 @@ namespace TravelAgency.BLL.Services
             _logger = logger;
             _mapper = mapper;
         }
+        public async Task<IEnumerable<ReviewDTO>> GetAllApprovedReviewsAsync(int count = 10)
+        {
+            try
+            {
+                var reviews = await _reviewRepository.GetAllAsync();
+                var approved = reviews
+                    .Where(r => r.IsApproved)
+                    .OrderByDescending(r => r.CreatedDate)
+                    .Take(count);
+
+                return _mapper.Map<IEnumerable<ReviewDTO>>(approved);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении подтвержденных отзывов");
+                throw;
+            }
+        }
+
 
         public async Task<ReviewDTO?> GetReviewByIdAsync(int id)
         {

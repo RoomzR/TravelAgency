@@ -1,23 +1,35 @@
 ﻿@model TravelAgency.Web.Models.ViewModels.TourIndexViewModel
 @{
-    ViewData["Title"] = "Туры";
+    ViewData["Title"] = "Каталог туров";
 }
 
-<div class="container py-4">
-    <div class="mb-5">
-        <h1 class="h2 fw-bold mb-2 text-primary">Туры</h1>
-        <p class="text-muted">Найдено туров: <strong>@Model.Tours.Count</strong></p>
-    </div>
+@using System.Globalization
+@{
+    var belarusCulture = new CultureInfo("be-BY");
+}
 
-    <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-body p-4">
-            <form method="get" class="row g-3">
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5" data-aos="fade-up">
+            <div>
+                <h1 class="giant-title-mini text-white mb-0">КАТАЛОГ ТУРОВ</h1>
+                <p class="text-primary-blue fw-bold mt-2">
+                    <i class="fas fa-globe-americas me-2"></i>Найдено направлений: @Model.Tours.Count
+                </p>
+            </div>
+        </div>
+
+        <div class="card-modern p-4 mb-5 border-primary-glow" data-aos="fade-up">
+            <form method="get" class="row g-3 align-items-center">
                 <div class="col-md-4">
-                    <input type="text" name="searchTerm" class="form-control"
-                           placeholder="Поиск по названию" value="@Model.SearchTerm">
+                    <div class="input-group-modern">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="searchTerm" class="form-control modern-input"
+                               placeholder="Поиск приключения..." value="@Model.SearchTerm">
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <select name="countryId" class="form-select">
+                    <select name="countryId" class="form-select modern-input select-custom">
                         <option value="">Все страны</option>
                         @foreach (var country in Model.Countries)
                         {
@@ -28,8 +40,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <select name="typeId" class="form-select">
-                        <option value="">Все типы</option>
+                    <select name="typeId" class="form-select modern-input select-custom">
+                        <option value="">Любой тип тура</option>
                         @foreach (var type in Model.TourTypes)
                         {
                             <option value="@type.Id" selected="@(Model.SelectedTypeId == type.Id)">
@@ -39,176 +51,298 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(90deg, #0d6efd, #198754); border: none;">Найти</button>
+                    <button type="submit" class="btn-login-neon w-100 py-2">
+                        <span>НАЙТИ</span>
+                    </button>
                 </div>
             </form>
         </div>
-    </div>
 
-    @if (!Model.Tours.Any())
-    {
-        <div class="alert alert-warning text-center py-5 border-0" style="background: #fff3cd; border-radius: 12px;">
-            <p class="h5 mb-3">Туры не найдены</p>
-            <p class="mb-3 text-muted">Попробуйте изменить параметры поиска</p>
-            <a href="@Url.Action("Index")" class="btn btn-outline-primary">Сбросить фильтры</a>
-        </div>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var tour in Model.Tours)
-            {
-                <div class="col-lg-6 col-xl-4">
-                    <div class="card border-0 shadow-sm h-100 tour-card">
-                        <div class="row g-0 h-100">
-                            <div class="col-md-5">
+        @if (!Model.Tours.Any())
+        {
+            <div class="text-center py-5" data-aos="zoom-in">
+                <div class="mb-4 opacity-25">
+                    <i class="fas fa-shuttle-van display-1 text-white"></i>
+                </div>
+                <h3 class="text-white fw-black">МАРШРУТЫ НЕ ОБНАРУЖЕНЫ</h3>
+                <p class="text-gray">Попробуйте изменить параметры фильтрации или поисковый запрос.</p>
+                <a href="@Url.Action("Index")" class="btn-ultra mt-3">СБРОСИТЬ ВСЕ</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var tour in Model.Tours)
+                {
+                    <div class="col-lg-6 col-xl-4" data-aos="fade-up">
+                        <div class="tour-card-neon h-100">
+                            <div class="card-img-container">
                                 @if (!string.IsNullOrEmpty(tour.ImageUrlsJson))
                                 {
                                     var images = tour.ImageUrlsJson.Trim('[', ']', '"').Split(',');
-                                    if (images.Length > 0)
-                                    {
-                                        <img src="@images[0].Trim()"
-                                             class="img-fluid h-100 w-100"
-                                             style="object-fit: cover; border-radius: 12px 0 0 12px;"
-                                             alt="@tour.Title"
-                                             onerror="this.src='/images/tours/default.jpg'">
-                                    }
-                                    else
-                                    {
-                                        <div class="h-100 w-100 d-flex align-items-center justify-content-center"
-                                             style="background: linear-gradient(135deg, #0d6efd, #198754); border-radius: 12px 0 0 12px;">
-                                            <span class="text-white fw-bold">@tour.Title</span>
-                                        </div>
-                                    }
+                                    <img src="@images[0].Trim()" alt="@tour.Title" onerror="this.src='/images/tours/default.jpg'">
                                 }
-                                else
-                                {
-                                    <div class="h-100 w-100 d-flex align-items-center justify-content-center"
-                                         style="background: linear-gradient(135deg, #0d6efd, #198754); border-radius: 12px 0 0 12px;">
-                                        <span class="text-white fw-bold">@tour.Title</span>
-                                    </div>
-                                }
+                                <div class="card-badges">
+                                    @if (tour.IsHotDeal)
+                                    {
+                                        <span class="badge-neon-red">HOT</span>
+                                    }
+                                    <span class="badge-neon-blue">@tour.TourTypeName</span>
+                                </div>
+                                <div class="price-float">
+                                    @if (tour.DiscountPercent > 0 && tour.OriginalPrice.HasValue)
+                                    {
+                                        <span class="text-muted text-decoration-line-through me-2" style="font-size: 0.8rem;">
+                                            @tour.OriginalPrice.Value.ToString("N0")
+                                        </span>
+                                    }
+                                    <span class="text-primary-blue">@tour.Price.ToString("N0")</span>
+                                    <span style="font-size: 0.9rem; margin-left: 2px;">BYN</span>
+                                </div>
                             </div>
 
-                            <div class="col-md-7">
-                                <div class="card-body h-100 d-flex flex-column p-3">
-                                    <div class="mb-2">
-                                        <h5 class="card-title fw-bold mb-1" style="color: #2c3e50;">@tour.Title</h5>
-                                        <div class="d-flex flex-wrap gap-1 mb-2">
-                                            @if (tour.IsHotDeal)
-                                            {
-                                                <span class="badge" style="background: #dc3545; color: white; font-size: 0.7rem;">Горящий</span>
-                                            }
-                                            @if (tour.DiscountPercent > 0)
-                                            {
-                                                <span class="badge" style="background: #198754; color: white; font-size: 0.7rem;">-@tour.DiscountPercent%</span>
-                                            }
-                                            <span class="badge" style="background: #6c757d; color: white; font-size: 0.7rem;">@tour.TourTypeName</span>
-                                        </div>
+                            <div class="card-content">
+                                <h3 class="tour-title text-white">@tour.Title</h3>
+                                <div class="tour-info-grid mb-4">
+                                    <div class="info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>@tour.CountryName</span>
                                     </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>@tour.DurationDays дн.</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span>@tour.HotelCategoryName</span>
+                                    </div>
+                                </div>
 
-                                    <div class="mb-3 flex-grow-1">
-                                        <div class="d-flex align-items-center mb-1">
-                                            <span class="text-muted small"></span>
-                                            <span class="ms-1 small">@tour.CountryName, @tour.CityName</span>
-                                        </div>
-                                        <div class="d-flex align-items-center mb-1">
-                                            <span class="text-muted small"></span>
-                                            <span class="ms-1 small">@tour.HotelCategoryName</span>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <span class="text-muted small"></span>
-                                            <span class="ms-1 small">@tour.StartDate.ToString("dd.MM.yyyy") • @tour.DurationDays дней</span>
-                                        </div>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <div class="date-tag">
+                                        <i class="far fa-calendar-alt me-1"></i> @tour.StartDate.ToString("dd.MM")
                                     </div>
-
-                                    <div class="d-flex justify-content-between align-items-end mt-auto">
-                                        <div>
-                                            @if (tour.DiscountPercent > 0 && tour.OriginalPrice.HasValue)
-                                            {
-                                                <div class="text-muted text-decoration-line-through small">
-                                                    @tour.OriginalPrice.Value.ToString("C")
-                                                </div>
-                                            }
-                                            <div class="h5 fw-bold mb-0" style="color: #0d6efd;">
-                                                @tour.Price.ToString("C")
-                                            </div>
-                                        </div>
-                                        <a href="@Url.Action("Details", new { id = tour.Id })"
-                                           class="btn btn-sm"
-                                           style="background: linear-gradient(90deg, #0d6efd, #198754); color: white; border: none;">
-                                            Подробнее
-                                        </a>
-                                    </div>
+                                    <a href="@Url.Action("Details", new { id = tour.Id })" class="btn-more">
+                                        ДЕТАЛИ <i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-
-      
-        
-    }
+                }
+            </div>
+        }
+    </div>
 </div>
 
 <style>
-    .tour-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 12px;
+    .bg-black {
+        background-color: #050505 !important;
+    }
+
+    .input-group-modern {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .input-group-modern input {
+            padding-left: 45px !important;
+        }
+
+    .select-custom {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-size: 16px 12px !important;
+    }
+
+    .tour-card-neon {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+    }
+
+        .tour-card-neon:hover {
+            transform: translateY(-12px);
+            border-color: #006aff;
+            box-shadow: 0 15px 40px rgba(0, 106, 255, 0.2);
+            background: rgba(255,255,255,0.05);
+        }
+
+    .card-img-container {
+        position: relative;
+        height: 220px;
         overflow: hidden;
     }
 
-        .tour-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(13, 110, 253, 0.15);
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
         }
 
-    .card-body {
-        background: white;
+    .tour-card-neon:hover .card-img-container img {
+        transform: scale(1.1);
     }
 
-    .badge {
-        padding: 0.25rem 0.5rem;
-        font-weight: 500;
+    .card-badges {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        display: flex;
+        gap: 8px;
     }
 
-    .page-link {
-        border: none;
-        color: #0d6efd;
-        margin: 0 3px;
-        border-radius: 8px;
-    }
-
-    .page-item.active .page-link {
-        background: linear-gradient(90deg, #0d6efd, #198754);
+    .badge-neon-red {
+        background: #ff4d4d;
         color: white;
-        border: none;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        box-shadow: 0 0 15px rgba(255,77,77,0.5);
     }
 
-    .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    .badge-neon-blue {
+        background: rgba(0, 106, 255, 0.8);
+        backdrop-filter: blur(5px);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
     }
 
-    .btn {
+    .price-float {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background: #fff;
+        color: #000;
+        padding: 6px 15px;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 1.1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .card-content {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tour-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    .tour-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        background: rgba(255,255,255,0.03);
+        padding: 12px;
+        border-radius: 15px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .info-item i {
+            color: #006aff;
+            font-size: 0.9rem;
+        }
+
+        .info-item span {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+    .date-tag {
+        color: rgba(255,255,255,0.4);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn-more {
+        color: #006aff;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 15px;
         transition: all 0.3s ease;
     }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        .modern-input:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #006aff !important;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.3) !important;
+            outline: none;
+        }
+
+
+        .modern-input option {
+            background: #1a1a1a; 
+            color: white;
+        }
+
+        .modern-input::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+    .form-select, .form-control {
+        box-shadow: none !important;
     }
+
+    .card-modern {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+    }
+
+        .btn-more:hover {
+            color: #fff;
+            transform: translateX(5px);
+        }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const selects = document.querySelectorAll('select');
+        const selects = document.querySelectorAll('.select-custom');
         selects.forEach(select => {
             select.addEventListener('change', function() {
-                this.form.submit();
+                this.closest('form').submit();
             });
         });
     });

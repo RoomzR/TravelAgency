@@ -1,65 +1,275 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TravelAgency</title>
+
+    
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/TravelAgency.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+    <style>
+        :root {
+            --primary-blue: #006aff;
+            --bg-black: #050505;
+            --text-gray: #86868b;
+            --glass-bg: rgba(5, 5, 5, 0.8);
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .navbar {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px 0;
+            border-bottom: 1px solid transparent;
+        }
+
+            .navbar.scrolled {
+                background: var(--glass-bg) !important;
+                backdrop-filter: blur(20px) saturate(180%);
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            transition: 0.3s;
+        }
+
+        .brand-dot {
+            color: var(--primary-blue);
+            text-shadow: 0 0 15px var(--primary-blue);
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--text-gray) !important;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1.5rem !important;
+        }
+
+            .nav-link:hover, .nav-link.active {
+                color: #fff !important;
+            }
+
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: var(--primary-blue);
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+                box-shadow: 0 0 10px var(--primary-blue);
+            }
+
+            .nav-link:hover::after, .nav-link.active::after {
+                width: 20px;
+            }
+
+        .modern-footer {
+            padding: 80px 0 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: linear-gradient(to bottom, transparent, #0a0a0a);
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            display: block;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: 0.3s;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+            .footer-link:hover {
+                color: var(--primary-blue);
+                padding-left: 5px;
+            }
+
+        .social-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            margin-right: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+            .social-circle:hover {
+                background: var(--primary-blue);
+                transform: translateY(-5px);
+                color: #fff;
+            }
+
+        .main-content {
+            min-height: 80vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 10px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-blue);
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+            <div class="container-fluid px-lg-5">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-plane text-primary"></i> TravelAgency
+                    <span class="brand-dot">✧</span> TRAVEL<span class="fw-light text-white-50">AGENCY</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                <i class="fas fa-home"></i> Главная
-                            </a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
+                               asp-controller="Home" asp-action="Index">Главная</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="About">
-                                <i class="fas fa-info-circle"></i> О компании
-                            </a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")"
+                               asp-controller="Home" asp-action="About">О компании</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Contact">
-                                <i class="fas fa-phone-alt"></i> Контакты
-                            </a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Tour" ? "active" : "")"
+                               asp-controller="Tour" asp-action="Index">Туры</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Tour" asp-action="Index">
-                                <i class="fas fa-umbrella-beach"></i> Туры
-                            </a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Contact" ? "active" : "")"
+                               asp-controller="Home" asp-action="Contact">Контакты</a>
                         </li>
                     </ul>
 
-                    <partial name="_LoginPartial" />
+                    <div class="d-flex align-items-center">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3 pt-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="modern-footer">
+        <div class="container px-lg-5">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <a href="#" class="footer-logo"><span class="brand-dot">✧</span> TRAVELAGENCY</a>
+                    <p class="text-gray">Мы создаем будущее туризма, объединяя инновационные технологии и страсть к открытиям. Республика Беларусь, 2026.</p>
+                    <div class="mt-4">
+                       
+                        <a href="https://instagram.com/roomzrly" class="social-circle" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+
+                       
+                        <a href="https://t.me/roomzrly" class="social-circle" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+
+                        @{
+                            var youtubeChannel = "https://www.youtube.com/@Roomz-u7x";
+                        }
+
+                       <a href="@youtubeChannel" class="social-circle" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+
+                        
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2 ms-lg-auto">
+                    <h6 class="fw-bold mb-4">Навигация</h6>
+                    <a asp-controller="Home" asp-action="Index" class="footer-link">Главная</a>
+                    <a asp-controller="Tour" asp-action="Index" class="footer-link">Все туры</a>
+                    <a asp-controller="Home" asp-action="About" class="footer-link">О нас</a>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <h6 class="fw-bold mb-4">Контакты</h6>
+                    <span class="footer-link">г. Гомель, ул. Рогачевская, 6</span>
+                    <span class="footer-link">+375 (44) 796-03-06</span>
+                    <span class="footer-link">info@travelagency.by</span>
+                </div>
+            </div>
+            <hr class="my-5 opacity-5">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-gray mb-0">&copy; 2026 Travel Agency. Future of Travel. Все права защищены.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <a asp-controller="Home" asp-action="Privacy" class="small text-gray text-decoration-none me-3 hover-white">Политика конфиденциальности</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+    <script>
+        $(window).scroll(function() {
+            if ($(this).scrollTop() > 50) {
+                $('.navbar').addClass('scrolled');
+            } else {
+                $('.navbar').removeClass('scrolled');
+            }
+        });
+
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

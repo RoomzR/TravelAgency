@@ -10,5 +10,6 @@ namespace TravelAgency.BLL.Interfaces
         Task<ReviewDTO> CreateReviewAsync(ReviewCreateDTO createDto, string userId);
         Task<bool> ApproveReviewAsync(int id);
         Task<bool> DeleteReviewAsync(int id);
+        Task<IEnumerable<ReviewDTO>> GetAllApprovedReviewsAsync(int count);
     }
 }

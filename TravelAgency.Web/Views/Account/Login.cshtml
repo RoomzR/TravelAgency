@@ -3,48 +3,58 @@
     ViewData["Title"] = "Вход в систему";
 }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Вход в систему</h4>
-                </div>
-                <div class="card-body">
+<div class="auth-wrapper bg-black d-flex align-items-center justify-content-center">
+    <div class="container" data-aos="zoom-in">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="auth-card-neon p-4">
+                    <div class="text-center mb-4">
+                        <div class="auth-icon-circle mb-3">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h2 class="text-white fw-black letter-spacing-sm">АВТОРИЗАЦИЯ</h2>
+                        <p class="text-gray small">Добро пожаловать в будущее путешествий</p>
+                    </div>
+
                     <form asp-action="Login" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
+                        <div class="mb-4">
+                            <div class="input-group-modern">
+                                <i class="fas fa-envelope"></i>
+                                <input asp-for="Email" class="modern-input w-100" placeholder="Ваш Email" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger-neon small"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
+                        <div class="mb-4">
+                            <div class="input-group-modern">
+                                <i class="fas fa-lock"></i>
+                                <input asp-for="Password" class="modern-input w-100" placeholder="Пароль" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger-neon small"></span>
                         </div>
 
-                        <div class="mb-3 form-check">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check custom-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label text-gray small">Запомнить</label>
+                            </div>
+                            <a href="#" class="btn-link-neon small">Забыли?</a>
                         </div>
 
-                        <div class="d-grid gap-2 mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-sign-in-alt me-2"></i>Войти
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn-login-neon py-3">
+                                <span>ВОЙТИ В СИСТЕМУ</span>
                             </button>
-                            <a asp-action="Register" class="btn btn-outline-secondary">
-                                Нет аккаунта? Зарегистрироваться
-                            </a>
-                        </div>
 
-                        <div class="text-center">
-                            <a href="#" class="text-muted small">Забыли пароль?</a>
+                            <div class="text-center mt-2">
+                                <span class="text-gray small">Нет аккаунта?</span>
+                                <a asp-action="Register" class="text-primary-blue fw-bold small ms-1 text-decoration-none">Создать профиль</a>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -52,6 +62,115 @@
         </div>
     </div>
 </div>
+
+<style>
+    .auth-wrapper {
+        min-height: 80vh;
+        background-color: #050505;
+    }
+    .auth-card-neon {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-icon-circle {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #006aff, #00d4ff);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 0 20px rgba(0, 106, 255, 0.4);
+    }
+
+    .input-group-modern {
+        position: relative;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.3);
+            z-index: 5;
+        }
+
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 15px !important;
+        padding: 12px 15px 12px 45px;
+        transition: all 0.3s ease;
+    }
+
+        .modern-input:focus {
+            border-color: #006aff !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.2) !important;
+            outline: none;
+        }
+
+    .btn-login-neon {
+        background: #006aff;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        transition: 0.4s;
+    }
+
+        .btn-login-neon:hover {
+            background: #0056ce;
+            box-shadow: 0 0 25px rgba(0, 106, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+    .text-danger-neon {
+        color: #ff4d4d;
+        font-size: 0.75rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .custom-check .form-check-input {
+        background-color: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+        .custom-check .form-check-input:checked {
+            background-color: #006aff;
+            border-color: #006aff;
+        }
+
+    .btn-link-neon {
+        color: rgba(255,255,255,0.4);
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-link-neon:hover {
+            color: #006aff;
+        }
+
+    .text-gray {
+        color: rgba(255,255,255,0.5);
+    }
+
+    .letter-spacing-sm {
+        letter-spacing: 2px;
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

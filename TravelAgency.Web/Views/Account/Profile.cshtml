@@ -1,101 +1,327 @@
 ﻿@model TravelAgency.Web.Models.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = "Мой профиль";
+    ViewData["Title"] = "Личный кабинет";
 }
 
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Мой профиль</h4>
-                </div>
-                <div class="card-body">
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+<div class="auth-wrapper bg-black py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row">
+            <div class="col-lg-9 mx-auto">
+                <div class="auth-card-neon overflow-hidden">
+                    <div class="profile-header-banner p-4 d-flex align-items-center">
+                        <div class="profile-avatar-neon me-4">
+                            <i class="fas fa-user-astronaut"></i>
                         </div>
-                    }
+                        <div>
+                            <h2 class="text-white fw-black mb-1 text-uppercase">Профиль путешественника</h2>
+                            <p class="text-primary-blue mb-0 small"><i class="fas fa-id-badge me-2"></i>Ваш ID: @Model.Email.GetHashCode().ToString("X")</p>
+                        </div>
+                    </div>
 
-                    <form asp-action="Profile" method="post">
-                        @Html.AntiForgeryToken()
-
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <div class="p-4 p-md-5">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-glass-success mb-4" role="alert">
+                                <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
                             </div>
+                        }
 
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" />
-                                <span asp-validation-for="LastName" class="form-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
-                            <input asp-for="Email" class="form-control" readonly />
-                            <small class="text-muted">Email нельзя изменить</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
-                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="DateOfBirth" class="form-label"></label>
-                            <input asp-for="DateOfBirth" type="date" class="form-control" />
-                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="PassportData" class="form-label"></label>
-                            <input asp-for="PassportData" class="form-control"
-                                   placeholder="Серия и номер паспорта" />
-                            <span asp-validation-for="PassportData" class="text-danger"></span>
-                            <small class="text-muted">Для оформления туров</small>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save me-2"></i>Сохранить изменения
-                            </button>
-                            <a href="/" class="btn btn-outline-secondary">
-                                <i class="fas fa-home me-2"></i>На главную
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card shadow mt-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Действия с аккаунтом</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="@Url.Action("Index", "Booking")" class="btn btn-outline-primary">
-                            <i class="fas fa-suitcase me-2"></i>Мои бронирования
-                        </a>
-                        <form asp-action="Logout" method="post" class="d-inline">
+                        <form asp-action="Profile" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-sign-out-alt me-2"></i>Выйти из системы
-                            </button>
+                            <div asp-validation-summary="ModelOnly" class="text-danger-neon small mb-3"></div>
+
+                            <div class="row g-4">
+                                <div class="col-12 border-bottom-dark pb-2 mb-2">
+                                    <h5 class="text-white-50 small text-uppercase fw-bold letter-spacing-sm">Основная информация</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="FirstName" class="text-gray small mb-2 ms-2">Имя</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-address-card"></i>
+                                        <input asp-for="FirstName" class="modern-input w-100" placeholder="Введите имя" />
+                                    </div>
+                                    <span asp-validation-for="FirstName" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="LastName" class="text-gray small mb-2 ms-2">Фамилия</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-signature"></i>
+                                        <input asp-for="LastName" class="modern-input w-100" placeholder="Введите фамилию" />
+                                    </div>
+                                    <span asp-validation-for="LastName" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="Email" class="text-gray small mb-2 ms-2">Email (защищено)</label>
+                                    <div class="input-group-modern opacity-75">
+                                        <i class="fas fa-envelope"></i>
+                                        <input asp-for="Email" class="modern-input w-100" readonly style="cursor: not-allowed;" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="PhoneNumber" class="text-gray small mb-2 ms-2">Телефон</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-phone"></i>
+                                        <input asp-for="PhoneNumber" class="modern-input w-100" placeholder="+375 (__) ___ __ __" />
+                                    </div>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-12 border-bottom-dark pb-2 mt-5 mb-2">
+                                    <h5 class="text-white-50 small text-uppercase fw-bold letter-spacing-sm">Данные для оформления туров</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="DateOfBirth" class="text-gray small mb-2 ms-2">Дата рождения</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <input asp-for="DateOfBirth" type="date" class="modern-input w-100" />
+                                    </div>
+                                    <span asp-validation-for="DateOfBirth" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="PassportData" class="text-gray small mb-2 ms-2">Паспортные данные</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-passport"></i>
+                                        <input asp-for="PassportData" class="modern-input w-100" placeholder="Серия и номер" />
+                                    </div>
+                                    <span asp-validation-for="PassportData" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-12 mt-5">
+                                    <div class="d-flex flex-wrap gap-3">
+                                        <button type="submit" class="btn-login-neon px-5 py-3 flex-grow-1">
+                                            <span>СОХРАНИТЬ ИЗМЕНЕНИЯ</span>
+                                        </button>
+                                        <a href="@Url.Action("Index", "Booking")" class="btn-outline-neon px-4 py-3">
+                                            <i class="fas fa-suitcase me-2"></i>МОИ ТУРЫ
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
+
+                        <div class="mt-5 pt-4 border-top-dark">
+                            <form asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-danger-link p-0">
+                                    <i class="fas fa-power-off me-2"></i>Выйти из аккаунта
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+
+    .profile-header-banner {
+        background: linear-gradient(90deg, rgba(0, 106, 255, 0.1), rgba(0, 212, 255, 0.02));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .profile-avatar-neon {
+        width: 80px;
+        height: 80px;
+        background: rgba(0, 106, 255, 0.15);
+        border: 2px solid #006aff;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #006aff;
+        box-shadow: 0 0 20px rgba(0, 106, 255, 0.3);
+    }
+
+    .border-bottom-dark {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 15px !important;
+        padding: 12px 15px 12px 45px !important; 
+        transition: all 0.3s ease;
+    }
+
+    .modern-input:focus {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: #006aff !important;
+        box-shadow: 0 0 15px rgba(0, 106, 255, 0.2) !important;
+        outline: none;
+    }
+
+
+    .modern-input[readonly] {
+        background: rgba(255, 255, 255, 0.02) !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .input-group-modern {
+        position: relative;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            z-index: 5;
+            transition: 0.3s;
+        }
+
+        .input-group-modern:focus-within i {
+            color: #006aff;
+        }
+
+    .profile-header-banner {
+        background: linear-gradient(90deg, rgba(0, 106, 255, 0.1), rgba(0, 212, 255, 0.02));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .profile-avatar-neon {
+        width: 80px;
+        height: 80px;
+        background: rgba(0, 106, 255, 0.15);
+        border: 2px solid #006aff;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #006aff;
+        box-shadow: 0 0 20px rgba(0, 106, 255, 0.3);
+    }
+
+
+    .border-bottom-dark {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .border-top-dark {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-login-neon {
+        background: #006aff;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-weight: 800;
+        transition: 0.4s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn-login-neon:hover {
+            background: #0056ce;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .btn-outline-neon {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-outline-neon:hover {
+            border-color: #006aff;
+            background: rgba(0, 106, 255, 0.05);
+            color: #006aff;
+        }
+
+    .text-danger-neon {
+        color: #ff4d4d;
+        font-size: 0.75rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .alert-glass-success {
+        background: rgba(46, 204, 113, 0.1);
+        border: 1px solid rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+        border-radius: 15px;
+        padding: 15px;
+    }
+
+    .border-top-dark {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .alert-glass-success {
+        background: rgba(25, 135, 84, 0.1);
+        border: 1px solid rgba(25, 135, 84, 0.3);
+        color: #2ecc71;
+        border-radius: 12px;
+        padding: 15px;
+    }
+
+    .btn-outline-neon {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-outline-neon:hover {
+            border-color: #006aff;
+            background: rgba(0, 106, 255, 0.05);
+            color: #006aff;
+        }
+
+    .btn-danger-link {
+        background: none;
+        border: none;
+        color: rgba(255, 77, 77, 0.6);
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn-danger-link:hover {
+            color: #ff4d4d;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+        }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.5;
+        cursor: pointer;
+    }
+</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
