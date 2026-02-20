@@ -1,0 +1,219 @@
+﻿@model TravelAgency.BLL.DTOs.TourCreateDTO
+@{
+    ViewData["Title"] = "Создание нового тура";
+}
+
+<div class="auth-wrapper bg-black py-5">
+    <div class="container" data-aos="zoom-in">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="auth-card-neon">
+                    <div class="profile-header-banner p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="profile-avatar-neon me-4">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-white fw-black mb-0 text-uppercase">Добавить новый тур</h2>
+                                <p class="text-primary-blue mb-0 small text-uppercase fw-bold letter-spacing-sm">
+                                    Заполнение полетных и отельных данных
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 p-md-5">
+                        <form asp-action="Create" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger-neon small mb-4"></div>
+
+                            <div class="row g-4">
+                                <div class="col-12 border-bottom-dark pb-2">
+                                    <h5 class="text-white-50 small text-uppercase fw-bold">1. Общая информация</h5>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label asp-for="Title" class="label-tech">Название тура</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-heading"></i>
+                                        <input asp-for="Title" class="modern-input w-100" placeholder="Например: Сияние Дубая" />
+                                    </div>
+                                    <span asp-validation-for="Title" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="TourTypeId" class="label-tech">Тип отдыха</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-umbrella-beach"></i>
+                                        <select asp-for="TourTypeId" class="modern-input w-100 custom-select-dark"
+                                                asp-items="@(new SelectList(ViewBag.TourTypes, "Id", "Name"))">
+                                            <option value="">Выберите тип...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="Description" class="label-tech">Описание программы</label>
+                                    <textarea asp-for="Description" class="modern-input w-100" rows="5" placeholder="Подробное описание маршрута..."></textarea>
+                                    <span asp-validation-for="Description" class="text-danger-neon small"></span>
+                                </div>
+
+                                <div class="col-12 border-bottom-dark pb-2 mt-5">
+                                    <h5 class="text-white-50 small text-uppercase fw-bold">2. Локация и отель</h5>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="CountryId" class="label-tech">Страна</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-globe-americas"></i>
+                                        <select asp-for="CountryId" class="modern-input w-100 custom-select-dark"
+                                                asp-items="@(new SelectList(ViewBag.Countries, "Id", "Name"))">
+                                            <option value="">Выбор страны...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="HotelCategoryId" class="label-tech">Класс отеля</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-star"></i>
+                                        <select asp-for="HotelCategoryId" class="modern-input w-100 custom-select-dark">
+                                            <option value="">Любой</option>
+                                            <option value="5">5 Звёзд</option>
+                                            <option value="4">4 Звезды</option>
+                                            <option value="3">3 Звезды</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="DurationDays" class="label-tech">Длительность (дней)</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-clock"></i>
+                                        <input asp-for="DurationDays" type="number" class="modern-input w-100" />
+                                    </div>
+                                </div>
+
+                                <div class="col-12 border-bottom-dark pb-2 mt-5">
+                                    <h5 class="text-white-50 small text-uppercase fw-bold">3. Стоимость и даты</h5>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="Price" class="label-tech">Цена (BYN)</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-coins"></i>
+                                        <input asp-for="Price" class="modern-input w-100" placeholder="0.00" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="StartDate" class="label-tech">Дата вылета</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-plane-departure"></i>
+                                        <input asp-for="StartDate" type="date" class="modern-input w-100" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="MaxPeopleCount" class="label-tech">Мест в группе</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-users"></i>
+                                        <input asp-for="MaxPeopleCount" type="number" class="modern-input w-100" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="label-tech">Ссылка на главное изображение</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-image"></i>
+                                        <input name="imageUrl" class="modern-input w-100" placeholder="https://site.com/photo.jpg" />
+                                    </div>
+                                    <p class="text-white-50 mt-1" style="font-size: 0.65rem;">Вставьте прямую ссылку на картинку</p>
+                                </div>
+
+                                <div class="col-12 mt-5">
+                                    <div class="d-flex gap-3">
+                                        <button type="submit" class="btn-login-neon py-3 px-5 flex-grow-1">
+                                            <span><i class="fas fa-cloud-upload-alt me-2"></i>ОПУБЛИКОВАТЬ</span>
+                                        </button>
+                                        <a asp-action="Index" class="btn-outline-neon py-3 px-4">ОТМЕНА</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 15px 12px 45px !important;
+        transition: all 0.3s ease;
+    }
+
+        .modern-input:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #006aff !important;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.2) !important;
+            outline: none;
+        }
+
+    .custom-select-dark {
+        color: white !important;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-size: 16px 12px !important;
+    }
+
+        .custom-select-dark option {
+            background: #0a0a0a !important; 
+            color: white !important;
+        }
+
+    .input-group-modern {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            color: #006aff; 
+            z-index: 5;
+        }
+
+    .label-tech {
+        display: block;
+        color: rgba(255,255,255,0.4);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        margin-left: 5px;
+    }
+
+    textarea.modern-input {
+        padding-left: 20px !important; 
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .border-bottom-dark {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+</style>

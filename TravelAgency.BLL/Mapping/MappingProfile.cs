@@ -34,12 +34,12 @@ namespace TravelAgency.BLL.Mapping
                 .ForMember(dest => dest.CityName, opt => opt.MapFrom(src => src.City.Name))
                 .ForMember(dest => dest.CountryName, opt => opt.MapFrom(src => src.City.Country.Name))
                 .ReverseMap();
-            
+
             CreateMap<Booking, BookingDTO>()
-                          .ForMember(dest => dest.TourTitle, opt => opt.MapFrom(src => src.Tour.Title))
-                          .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Client.UserName))
-                          .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => src.FinalPrice))
-                          .ReverseMap();
+                .ForMember(d => d.ClientName, opt => opt.MapFrom(s => s.Client.FirstName + " " + s.Client.LastName))
+                .ForMember(d => d.ClientEmail, opt => opt.MapFrom(s => s.Client.Email))
+                .ForMember(d => d.ClientPhoneNumber, opt => opt.MapFrom(s => s.Client.PhoneNumber))
+                .ForMember(d => d.TourTitle, opt => opt.MapFrom(s => s.Tour.Title));
 
             CreateMap<BookingCreateDTO, Booking>();
             CreateMap<BookingUpdateDTO, Booking>();

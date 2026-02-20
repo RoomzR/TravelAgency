@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using TravelAgency.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
 using TravelAgency.DAL.Data;
-
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.DAL.Repositories
 {
@@ -21,27 +15,6 @@ namespace TravelAgency.DAL.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public virtual async Task CreateAsync(T entity)
-        {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            var entity = await GetByIdAsync(id);
-            if (entity == null)
-            {
-                _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<bool> ExistsAsync(int id)
-        {
-            return await _dbSet.FindAsync(id) != null;
-        }
-
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
@@ -52,10 +25,31 @@ namespace TravelAgency.DAL.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        public virtual async Task CreateAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
         public virtual async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
+        }
+
+        public virtual async Task DeleteAsync(int id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public virtual async Task<bool> ExistsAsync(int id)
+        {
+            return await _dbSet.AnyAsync(e => EF.Property<int>(e, "Id") == id);
         }
     }
 }

@@ -127,8 +127,12 @@
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
-                                       class="btn-ultra w-100 justify-content-center mb-3">ВОЙТИ ДЛЯ БРОНИ</a>
+                                <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
+                                   class="btn-auth-neon w-100 mb-3">
+                                    <span class="btn-content">
+                                        <i class="fas fa-sign-in-alt me-2"></i>ВОЙТИ ДЛЯ БРОНИ
+                                    </span>
+                                </a>
                                 }
                             </form>
 
@@ -150,12 +154,25 @@
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                         {
-                            <div class="d-flex gap-2 mt-4">
-                                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-outline-warning w-100 rounded-pill">Правка</a>
-                                <form action="@Url.Action("Delete")" method="post" class="w-100">
-                                    <input type="hidden" name="id" value="@Model.Id" />
-                                    <button class="btn btn-outline-danger w-100 rounded-pill" onclick="return confirm('Удалить?')">Удалить</button>
-                                </form>
+                            <div class="admin-actions-wrapper mt-4 p-4 rounded-4 shadow-lg border-dashed-primary">
+                                <h6 class="text-primary-blue fw-black mb-3 text-uppercase small tracking-wider">
+                                    <i class="fas fa-user-shield me-2"></i>Панель управления туром
+                                </h6>
+                                <div class="d-grid gap-3">
+                                    <a asp-controller="Tour" asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit-neon">
+                                        <span class="btn-text"><i class="fas fa-pen-nib me-2"></i>РЕДАКТИРОВАТЬ ДАННЫЕ</span>
+                                        <span class="btn-blur"></span>
+                                    </a>
+
+                                    <form asp-controller="Tour" asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                                          onsubmit="return confirm('ВНИМАНИЕ! Вы уверены, что хотите безвозвратно удалить этот тур?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-delete-neon w-100">
+                                            <span class="btn-text"><i class="fas fa-trash-alt me-2"></i>УДАЛИТЬ ОБЪЕКТ</span>
+                                            <span class="btn-blur"></span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         }
                     </div>
@@ -166,6 +183,129 @@
 </div>
 
 <style>
+
+    .border-dashed-primary {
+        border: 1px dashed rgba(0, 106, 255, 0.4);
+        background: rgba(0, 106, 255, 0.03);
+    }
+
+    .tracking-wider {
+        letter-spacing: 2px;
+    }
+
+    .btn-edit-neon, .btn-delete-neon {
+        position: relative;
+        padding: 14px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
+
+    .btn-edit-neon {
+        background: rgba(0, 106, 255, 0.1);
+        color: #006aff !important;
+        border: 1px solid #006aff;
+    }
+
+        .btn-edit-neon:hover {
+            background: #006aff;
+            color: #fff !important;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+    .btn-delete-neon {
+        background: rgba(255, 77, 77, 0.1);
+        color: #ff4d4d !important;
+        border: 1px solid #ff4d4d;
+    }
+
+        .btn-delete-neon:hover {
+            background: #ff4d4d;
+            color: #fff !important;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.5);
+            transform: translateY(-2px);
+        }
+
+    .btn-text {
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-blur {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-edit-neon:hover .btn-blur, .btn-delete-neon:hover .btn-blur {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-auth-neon {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        text-decoration: none;
+        background: rgba(0, 106, 255, 0.05); 
+        color: #006aff !important; 
+        border: 1px solid #006aff;
+        border-radius: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1;
+    }
+
+        .btn-auth-neon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient( 120deg, transparent, rgba(0, 106, 255, 0.2), transparent );
+            transition: all 0.6s;
+        }
+
+        .btn-auth-neon:hover {
+            color: #fff !important;
+            background: #006aff;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.6), 0 0 40px rgba(0, 106, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+            .btn-auth-neon:hover::before {
+                left: 100%;
+            }
+
+        .btn-auth-neon:active {
+            transform: translateY(0);
+        }
+
+    .btn-content {
+        position: relative;
+        z-index: 2;
+    }
+
     .bg-black {
         background-color: #050505 !important;
     }
@@ -260,7 +400,26 @@
         color: #fff !important;
         border-radius: 12px !important;
         padding: 12px !important;
+        cursor: pointer;
+        appearance: none; 
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        background-size: 16px 12px !important;
     }
+
+        .modern-input option {
+            background-color: #1a1a1a; 
+            color: #ffffff; 
+            padding: 10px;
+        }
+
+        .modern-input:focus {
+            background-color: rgba(255,255,255,0.1) !important;
+            border-color: #006aff !important;
+            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(0, 106, 255, 0.25);
+        }
 
     .booking-sticky {
         position: sticky;

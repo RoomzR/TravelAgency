@@ -16,6 +16,9 @@
         public string? TourTitle { get; set; }
         public string? ClientName { get; set; }
         public decimal FinalPrice { get; set; }
+
+        public string? ClientEmail { get; set; }   
+        public string? ClientPhoneNumber { get; set; } 
     }
 
     public class BookingCreateDTO

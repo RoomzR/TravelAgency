@@ -1,0 +1,243 @@
+﻿@model TravelAgency.BLL.DTOs.TourUpdateDTO
+@{
+    ViewData["Title"] = "Редактирование: " + Model.Title;
+}
+
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="d-flex align-items-center justify-content-between mb-5">
+            <div>
+                <h1 class="giant-title-mini text-white mb-0 text-uppercase">РЕДАКТОР МАРШРУТА</h1>
+                <p class="text-primary-blue fw-bold mt-2">
+                    <i class="fas fa-edit me-2"></i>Изменение параметров тура #@Model.Id
+                </p>
+            </div>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn-more text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i>ОТМЕНИТЬ
+            </a>
+        </div>
+
+        <form asp-action="Edit" method="post" class="row g-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="col-lg-8">
+                <div class="card-modern p-4 mb-4">
+                    <h5 class="text-white mb-4 fw-black tracking-wider">
+                        <i class="fas fa-info-circle text-primary-blue me-2"></i>ОСНОВНАЯ ИНФОРМАЦИЯ
+                    </h5>
+
+                    <div class="mb-4">
+                        <label class="label-modern">НАЗВАНИЕ ТУРА</label>
+                        <div class="input-group-modern">
+                            <i class="fas fa-signature"></i>
+                            <input asp-for="Title" class="modern-input w-100" placeholder="Напр: Рассвет в Дубае..." />
+                        </div>
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="label-modern">ПОЛНОЕ ОПИСАНИЕ</label>
+                        <textarea asp-for="Description" class="modern-input w-100" rows="10"
+                                  placeholder="Опишите все прелести путешествия..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="card-modern p-4">
+                    <h5 class="text-white mb-4 fw-black tracking-wider">
+                        <i class="fas fa-images text-primary-blue me-2"></i>МЕДИА-КОНТЕНТ
+                    </h5>
+                    <div class="mb-3">
+                        <label class="label-modern">JSON МАССИВ ССЫЛОК</label>
+                        <div class="input-group-modern">
+                            <i class="fas fa-link"></i>
+                            <input asp-for="ImageUrlsJson" class="modern-input w-100" id="imageInput"
+                                   placeholder='["url1", "url2"]' />
+                        </div>
+                    </div>
+                    <div id="imagePreview" class="preview-gallery mt-3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="sticky-top" style="top: 20px;">
+                    <div class="card-modern p-4 border-primary-glow mb-4">
+                        <h5 class="text-white mb-4 fw-black tracking-wider">ЦЕНА И УСЛОВИЯ</h5>
+
+                        <div class="mb-4">
+                            <label class="label-modern">СТОИМОСТЬ (BYN)</label>
+                            <div class="input-group-modern">
+                                <i class="fas fa-coins"></i>
+                                <input asp-for="Price" type="number" step="0.01" class="modern-input w-100 price-field" />
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <label class="label-modern">СКИДКА %</label>
+                                <input asp-for="DiscountPercent" type="number" class="modern-input w-100" />
+                            </div>
+                            <div class="col-6">
+                                <label class="label-modern">ДНЕЙ</label>
+                                <input asp-for="DurationDays" class="modern-input w-100" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="label-modern">МАКС. ЧЕЛОВЕК</label>
+                            <div class="input-group-modern">
+                                <i class="fas fa-users"></i>
+                                <input asp-for="MaxPeopleCount" class="modern-input w-100" />
+                            </div>
+                        </div>
+
+                        <div class="admin-actions-wrapper p-3 rounded-4 bg-black-opacity mb-4">
+                            <div class="form-check form-switch custom-switch d-flex align-items-center justify-content-between p-0">
+                                <label class="form-check-label text-white small fw-bold" for="hotDealSwitch">ГОРЯЩЕЕ ПРЕДЛОЖЕНИЕ</label>
+                                <input asp-for="IsHotDeal" class="form-check-input ms-0" type="checkbox" id="hotDealSwitch">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-login-neon w-100 py-3">
+                            <span><i class="fas fa-save me-2"></i>СОХРАНИТЬ</span>
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-gray small"><i class="fas fa-shield-alt me-1"></i> Режим редактирования</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .bg-black {
+        background-color: #050505 !important;
+    }
+
+    .label-modern {
+        display: block;
+        color: rgba(255,255,255,0.5);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .card-modern {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+    }
+
+    .input-group-modern {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            color: #006aff;
+            font-size: 0.9rem;
+            z-index: 5;
+        }
+
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 15px 12px 45px !important;
+        transition: all 0.3s ease;
+    }
+
+    textarea.modern-input {
+        padding-left: 15px !important; 
+    }
+
+    .modern-input:focus {
+        border-color: #006aff !important;
+        box-shadow: 0 0 15px rgba(0, 106, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        outline: none;
+    }
+
+    .price-field {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #00ff88 !important; 
+    }
+
+    .bg-black-opacity {
+        background: rgba(0,0,0,0.3);
+    }
+
+    .preview-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .preview-thumb {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid rgba(0, 106, 255, 0.3);
+        transition: 0.3s;
+    }
+
+        .preview-thumb:hover {
+            transform: scale(1.05);
+            border-color: #006aff;
+        }
+
+    .custom-switch .form-check-input {
+        width: 45px;
+        height: 22px;
+        background-color: rgba(255,255,255,0.1);
+        border: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    }
+
+        .custom-switch .form-check-input:checked {
+            background-color: #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+        }
+</style>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('imagePreview');
+
+    function updateImages() {
+        previewContainer.innerHTML = '';
+        try {
+            const val = imageInput.value;
+            const urls = JSON.parse(val);
+            if (Array.isArray(urls)) {
+                urls.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.className = 'preview-thumb';
+                    img.onerror = () => img.style.display = 'none'; 
+                    previewContainer.appendChild(img);
+                });
+            }
+        } catch (e) {
+         
+        }
+    }
+
+    imageInput.addEventListener('input', updateImages);
+    window.addEventListener('load', updateImages);
+</script>

@@ -13,5 +13,6 @@ namespace TravelAgency.BLL.Interfaces
         Task<bool> CancelBookingAsync(int id, string userId);
         Task<bool> CheckTourAvailabilityAsync(int tourId, int peopleCount);
         Task<decimal> CalculateBookingPriceAsync(int tourId, int peopleCount, string? promoCode = null);
+        Task<IEnumerable<BookingDTO>> GetAllBookingsAsync();
     }
 }

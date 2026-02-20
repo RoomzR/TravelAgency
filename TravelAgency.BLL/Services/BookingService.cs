@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
 using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
-using TravelAgency.DAL.Entities; 
 using TravelAgency.DAL.Enums;   
 using TravelAgency.DAL.Interfaces;
 
@@ -254,5 +253,19 @@ namespace TravelAgency.BLL.Services
                 throw;
             }
         }
+        public async Task<IEnumerable<BookingDTO>> GetAllBookingsAsync()
+        {
+            try
+            {
+                var bookings = await _bookingRepository.GetAllAsync();
+                return _mapper.Map<IEnumerable<BookingDTO>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all bookings for manager panel");
+                throw;
+            }
+        }
+
     }
 }

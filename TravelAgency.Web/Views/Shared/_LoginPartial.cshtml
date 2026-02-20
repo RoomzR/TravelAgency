@@ -22,11 +22,28 @@
                         <i class="fas fa-id-badge me-2"></i>Профиль
                     </a>
                 </li>
-                <li>
-                    <a class="dropdown-item" href="#">
-                        <i class="fas fa-suitcase me-2"></i>Бронирования
-                    </a>
-                </li>
+                @if (User.IsInRole("Client"))
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Booking" asp-action="Index">
+                            <i class="fas fa-suitcase me-2"></i>Бронирования
+                        </a>
+                    </li>
+                }
+                @if (User.IsInRole("Manager") || User.IsInRole("Admin") || User.IsInRole("Director"))
+                {
+                    <li>
+                        <a class="dropdown-item" asp-controller="Booking" asp-action="ManagerPanel">
+                            <i class="fas fa-tasks me-2"></i>Панель управления
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Tour" asp-action="Create">
+                            <i class="fas fa-plus-circle me-2"></i>Создать тур
+                        </a>
+                    </li>
+                }
+
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">

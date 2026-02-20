@@ -58,6 +58,14 @@ namespace TravelAgency.DAL.Repositories
                 .Include(b => b.ManagerConfirmed)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
+        public override async Task<IEnumerable<Booking>> GetAllAsync()
+        {
+            return await _context.Bookings
+                .Include(b => b.Client) 
+                .Include(b => b.Tour)  
+                .OrderByDescending(b => b.BookingDate)
+                .ToListAsync();
+        }
 
         public async Task<bool> HasActiveBookingAsync(int tourId, string userId)
         {

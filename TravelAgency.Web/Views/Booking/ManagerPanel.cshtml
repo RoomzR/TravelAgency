@@ -1,0 +1,275 @@
+﻿@model IEnumerable<TravelAgency.BLL.DTOs.BookingDTO>
+@{
+    ViewData["Title"] = "Панель Менеджера";
+}
+
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container-fluid px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="text-white fw-black mb-0 text-uppercase tracking-wider">CONTROL CENTER</h1>
+                <p class="text-primary-blue mb-0 small fw-bold">
+                    <i class="fas fa-list-ul me-2"></i>ОБРАБОТКА ЗАЯВОК
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="btn-outline-neon py-2 px-4 no-hover">
+                    АКТИВНЫХ ЗАЯВОК: @Model.Count()
+                </span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-neon-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ДАТА</th>
+                        <th>КЛИЕНТ</th>
+                        <th>ТУР</th>
+                        <th>ЛЮДЕЙ</th>
+                        <th>СУММА</th>
+                        <th class="text-end">ДЕЙСТВИЯ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary-blue">#@item.Id.ToString("D4")</td>
+                            <td class="text-gray small">@item.BookingDate.ToString("dd.MM HH:mm")</td>
+
+                            <td>
+                                <div class="text-white fw-bold">@item.ClientName</div>
+                                <div class="d-flex flex-column gap-1 mt-1">
+                                    <a href="tel:@item.ClientPhoneNumber" class="text-neon-green text-decoration-none extra-small fw-bold">
+                                        <i class="fas fa-phone-alt me-1" style="font-size: 0.6rem;"></i> @(item.ClientPhoneNumber ?? "Нет номера")
+                                    </a>
+                                    <a href="mailto:@item.ClientEmail" class="text-gray text-decoration-none extra-small">
+                                        <i class="fas fa-envelope me-1" style="font-size: 0.6rem;"></i> @item.ClientEmail
+                                    </a>
+                                </div>
+                            </td>
+
+                            <td class="text-white fw-medium">@item.TourTitle</td>
+                            <td><span class="badge-count">@item.PeopleCount</span></td>
+                            <td class="text-neon-green fw-bold">@item.FinalPrice.ToString("N0") BYN</td>
+                            <td class="text-end">
+                                <button class="btn-login-neon py-2 px-3 small" data-bs-toggle="modal" data-bs-target="#modal-@item.Id" style="font-size: 0.7rem;">
+                                    <span>ОБРАБОТАТЬ</span>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <div class="modal fade" id="modal-@item.Id" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content auth-card-neon border-primary-blue" style="background: #0a0a0a !important; border-radius: 20px;">
+                                    <form asp-action="UpdateStatus" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+
+                                        <div class="modal-header border-bottom-dark p-4">
+                                            <h5 class="modal-title text-white fw-black text-uppercase">Заявка #@item.Id</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body p-4">
+                                            <div class="mb-4 p-3 rounded-3" style="background: rgba(0, 106, 255, 0.05); border: 1px dashed rgba(0, 106, 255, 0.3);">
+                                                <label class="text-primary-blue small fw-bold mb-1 d-block text-uppercase">Заметка клиента:</label>
+                                                <p class="text-white small mb-0">
+                                                    @(string.IsNullOrEmpty(item.Comments) ? "Клиент не оставил пожеланий" : item.Comments)
+                                                </p>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label class="text-gray small fw-bold mb-2 d-block">УСТАНОВИТЬ СТАТУС</label>
+                                                <div class="input-group-modern">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    <select name="status" class="modern-input w-100 custom-select-dark">
+                                                        <option value="Confirmed">Подтвердить (Confirmed)</option>
+                                                        <option value="Cancelled">Отклонить (Cancelled)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label class="text-gray small fw-bold mb-2 d-block">КОММЕНТАРИЙ МЕНЕДЖЕРА</label>
+                                                <div class="input-group-modern">
+                                                    <i class="fas fa-comment-dots"></i>
+                                                    <textarea name="managerComments" class="modern-input w-100" rows="3" placeholder="Напишите клиенту (увидит в ЛК)..."></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer border-0 p-4 pt-0">
+                                            <button type="submit" class="btn-login-neon w-100 py-3">
+                                                <span>СОХРАНИТЬ ИЗМЕНЕНИЯ</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                       
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 15px 12px 45px !important;
+        transition: all 0.3s ease;
+    }
+
+        .modern-input:focus {
+            border-color: #006aff !important;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.2) !important;
+            outline: none;
+        }
+
+    .custom-select-dark {
+        color: white !important;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1rem center !important;
+        background-size: 16px 12px !important;
+    }
+
+    .custom-select-dark option {
+            background: #0a0a0a !important;
+            color: white !important;
+        }
+
+    .input-group-modern {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-group-modern i {
+            position: absolute;
+            left: 15px;
+            color: #006aff;
+            z-index: 5;
+        }
+
+    textarea.modern-input {
+        padding-left: 45px !important;
+    }
+
+    .border-bottom-dark {
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    }
+
+    .bg-black {
+        background-color: #050505 !important;
+    }
+
+    .text-neon-green {
+        color: #00ff88;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+    }
+
+    .custom-neon-table a.extra-small {
+        font-size: 0.7rem;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+
+        .custom-neon-table a.extra-small:hover {
+            filter: brightness(1.3);
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+            text-decoration: underline !important;
+        }
+
+    .text-gray {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .extra-small i {
+        width: 14px;
+        text-align: center;
+    }
+
+    .extra-small {
+        font-size: 0.7rem;
+        color: rgba(255,255,255,0.4);
+    }
+
+    .custom-neon-table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .custom-neon-table thead th {
+            border: none;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            padding: 15px 20px;
+        }
+
+        .custom-neon-table tbody tr {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+
+            .custom-neon-table tbody tr:hover {
+                background: rgba(0, 106, 255, 0.05) !important;
+                box-shadow: 0 0 20px rgba(0, 106, 255, 0.1);
+            }
+
+        .custom-neon-table td {
+            border: none;
+            padding: 20px;
+            vertical-align: middle;
+            color: rgba(255,255,255,0.8);
+        }
+
+    .auth-card-neon {
+        background: #0a0a0a !important;
+        border: 1px solid #006aff !important;
+        box-shadow: 0 0 30px rgba(0, 106, 255, 0.2) !important;
+        border-radius: 20px !important;
+    }
+
+    .custom-select-dark {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px 12px;
+    }
+
+        .custom-select-dark option {
+            background-color: #0a0a0a;
+            color: white;
+        }
+
+    .badge-count {
+        background: rgba(255,255,255,0.1);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+    }
+
+    .no-hover:hover {
+        background: transparent !important;
+        color: #006aff !important;
+    }
+
+    .border-bottom-dark {
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+</style>
