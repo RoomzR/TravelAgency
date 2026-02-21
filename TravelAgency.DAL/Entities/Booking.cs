@@ -13,6 +13,7 @@ namespace TravelAgency.DAL.Entities
         public DateTime BookingDate { get; set; } = DateTime.UtcNow;
         public string? Comments { get; set; }
         public string? ManagerConfirmedId { get; set; }
+        public string? ManagerComments { get; set; }
         public int? PromoCodeId { get; set; }
         public decimal? DiscountAmount { get; set; }
 

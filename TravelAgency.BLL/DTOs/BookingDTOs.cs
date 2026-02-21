@@ -18,7 +18,13 @@
         public decimal FinalPrice { get; set; }
 
         public string? ClientEmail { get; set; }   
-        public string? ClientPhoneNumber { get; set; } 
+        public string? ClientPhoneNumber { get; set; }
+
+
+
+        public string? ManagerName { get; set; }      
+        public string? ManagerComments { get; set; } 
+
     }
 
     public class BookingCreateDTO

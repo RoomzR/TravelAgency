@@ -39,7 +39,12 @@ namespace TravelAgency.BLL.Mapping
                 .ForMember(d => d.ClientName, opt => opt.MapFrom(s => s.Client.FirstName + " " + s.Client.LastName))
                 .ForMember(d => d.ClientEmail, opt => opt.MapFrom(s => s.Client.Email))
                 .ForMember(d => d.ClientPhoneNumber, opt => opt.MapFrom(s => s.Client.PhoneNumber))
-                .ForMember(d => d.TourTitle, opt => opt.MapFrom(s => s.Tour.Title));
+                .ForMember(d => d.TourTitle, opt => opt.MapFrom(s => s.Tour.Title))
+                .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src =>
+                    src.ManagerConfirmed != null
+                    ? $"{src.ManagerConfirmed.FirstName} {src.ManagerConfirmed.LastName}"
+                    : null))
+                .ForMember(dest => dest.ManagerComments, opt => opt.MapFrom(src => src.ManagerComments));
 
             CreateMap<BookingCreateDTO, Booking>();
             CreateMap<BookingUpdateDTO, Booking>();

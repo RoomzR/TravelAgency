@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravelAgency.DAL.Entities;
-using TravelAgency.DAL.Interfaces;
 using TravelAgency.DAL.Data;
+using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Enums;
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.DAL.Repositories
 {
@@ -58,14 +59,20 @@ namespace TravelAgency.DAL.Repositories
                 .Include(b => b.ManagerConfirmed)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
-        public override async Task<IEnumerable<Booking>> GetAllAsync()
+
+        public async Task<IEnumerable<Booking>> GetAllAsync()
         {
             return await _context.Bookings
-                .Include(b => b.Client) 
-                .Include(b => b.Tour)  
+                .Include(b => b.Client)            
+                .Include(b => b.Tour)             
+                .Include(b => b.ManagerConfirmed)  
                 .OrderByDescending(b => b.BookingDate)
                 .ToListAsync();
         }
+
+
+
+
 
         public async Task<bool> HasActiveBookingAsync(int tourId, string userId)
         {
@@ -94,6 +101,13 @@ namespace TravelAgency.DAL.Repositories
                 .Include(b => b.Client)
                 .OrderByDescending(b => b.BookingDate)
                 .ToListAsync();
+        }
+        public async Task<bool> ExistsActiveBookingAsync(int tourId, string userId)
+        {
+            return await _context.Bookings
+                .AnyAsync(b => b.TourId == tourId
+                            && b.ClientId == userId  
+                            && b.Status != BookingStatus.Cancelled);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TravelAgency.BLL.Interfaces;
 using TravelAgency.BLL.DTOs;
+using TravelAgency.BLL.Interfaces;
 using TravelAgency.DAL.Entities;
+using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.Web.Controllers
 {
@@ -12,11 +13,13 @@ namespace TravelAgency.Web.Controllers
     {
         private readonly IBookingService _bookingService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPromoCodeRepository _promoCodeRepository;
 
-        public BookingController(IBookingService bookingService, UserManager<ApplicationUser> userManager)
+        public BookingController(IBookingService bookingService, UserManager<ApplicationUser> userManager, IPromoCodeRepository promoCodeRepository)
         {
             _bookingService = bookingService;
             _userManager = userManager;
+            _promoCodeRepository = promoCodeRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -56,34 +59,32 @@ namespace TravelAgency.Web.Controllers
         public async Task<IActionResult> Create(BookingCreateDTO model)
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId)) return Challenge();
 
-            if (string.IsNullOrEmpty(userId))
+            var alreadyBooked = await _bookingService.IsTourBookedByUserAsync(model.TourId, userId);
+            if (alreadyBooked)
             {
-                return Challenge();
+                TempData["ErrorMessage"] = "Вы уже забронировали этот тур. Проверьте личный кабинет.";
+                return RedirectToAction("Details", "Tour", new { id = model.TourId });
             }
 
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Ошибка в данных бронирования. Проверьте количество человек.";
-                return RedirectToAction("Details", "Tours", new { id = model.TourId });
+                TempData["ErrorMessage"] = "Ошибка в данных. Проверьте заполнение полей.";
+                return RedirectToAction("Details", "Tour", new { id = model.TourId });
             }
 
             try
             {
+               
                 var result = await _bookingService.CreateBookingAsync(model, userId);
-
-                TempData["SuccessMessage"] = $"Тур '{result.TourTitle}' успешно забронирован!";
+                TempData["SuccessMessage"] = $"Тур успешно забронирован!";
                 return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidOperationException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Details", "Tours", new { id = model.TourId });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Произошла внутренняя ошибка. Попробуйте позже.";
-                return RedirectToAction("Details", "Tours", new { id = model.TourId });
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Details", "Tour", new { id = model.TourId });
             }
         }
         [Authorize(Roles = "Admin, Director, Manager")]
@@ -95,22 +96,8 @@ namespace TravelAgency.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Director, Manager")]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
-        {
-            var updateDto = new BookingUpdateDTO
-            {
-                Id = id,
-                Status = status,
-                ManagerId = _userManager.GetUserId(User)
-            };
-
-            await _bookingService.UpdateBookingStatusAsync(updateDto);
-            return RedirectToAction(nameof(ManagerPanel));
-        }
-        [HttpPost]
-        [Authorize(Roles = "Manager, Admin, Director")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, string status, string managerComments)
+        public async Task<IActionResult> UpdateStatus(int id, string status, string? managerComments = null)
         {
             var managerId = _userManager.GetUserId(User);
 
@@ -130,7 +117,56 @@ namespace TravelAgency.Web.Controllers
                 TempData["ErrorMessage"] = "Ошибка при обновлении статуса";
 
             return RedirectToAction(nameof(ManagerPanel));
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> CheckPromo(string code, int tourId)
+        {
+            var promo = await _promoCodeRepository.GetByCodeAsync(code);
+            var isValid = await _promoCodeRepository.IsCodeValidAsync(code);
+
+            if (promo != null && isValid)
+            {
+                return Json(new
+                {
+                    success = true,
+                    discount = promo.DiscountPercent,
+                    message = $"Активирована скидка {promo.DiscountPercent}%"
+                });
+            }
+
+            return Json(new { success = false, message = "Промокод недействителен" });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateComments(int bookingId, string newComment)
+        {
+            if (string.IsNullOrWhiteSpace(newComment))
+                return RedirectToAction(nameof(Index)); 
+
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+
+                if (string.IsNullOrEmpty(userId))
+                    return Challenge();
+
+                await _bookingService.UpdateClientCommentAsync(bookingId, newComment, userId);
+
+                TempData["SuccessMessage"] = "Сообщение успешно отправлено!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Ошибка: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index)); 
+        }
+        public async Task<IActionResult> MyBookings()
+        {
+            var userId = _userManager.GetUserId(User);
+            var bookings = await _bookingService.GetUserBookingsAsync(userId);
+            return View(bookings);
         }
     }
 }

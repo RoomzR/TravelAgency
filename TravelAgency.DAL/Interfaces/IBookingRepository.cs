@@ -11,5 +11,6 @@ namespace TravelAgency.DAL.Interfaces
         Task<bool> HasActiveBookingAsync(int tourId, string userId);
         Task<int> GetBookedPlacesAsync(int tourId);
         Task<IEnumerable<Booking>> GetBookingsByStatusAsync(string status);
+        Task<bool> ExistsActiveBookingAsync(int tourId, string userId);
     }
 }

@@ -12,7 +12,7 @@
             </div>
             <div>
                 <h1 class="text-white fw-black mb-0 text-uppercase">Мои путешествия</h1>
-                <p class="text-primary-blue mb-0 small">Управляйте вашими бронированиями и общайтесь с поддержкой</p>
+                <p class="text-primary-blue mb-0 small">Список ваших бронирований и связь с менеджером</p>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
                                 <div class="col-lg-4">
                                     <h5 class="text-white fw-bold mb-1">@item.TourTitle</h5>
                                     <div class="d-flex gap-3 align-items-center">
-                                        <span class="text-gray small"><i class="fas fa-user-friends me-1"></i> @item.PeopleCount</span>
+                                        <span class="text-gray small"><i class="fas fa-user-friends me-1"></i> @item.PeopleCount чел.</span>
                                         @if (!string.IsNullOrEmpty(item.Status))
                                         {
                                             <div class="d-flex align-items-center">
@@ -58,14 +58,18 @@
                                     <div class="text-white fw-black h4 mb-0">@item.FinalPrice.ToString("N2") BYN</div>
                                     @if (item.DiscountAmount > 0)
                                     {
-                                        <div class="text-success-neon small" style="font-size: 0.7rem;">Скидка: -@item.DiscountAmount?.ToString("N0") BYN</div>
+                                        <div class="text-success-neon extra-small">Скидка: -@item.DiscountAmount?.ToString("N0") BYN</div>
                                     }
                                 </div>
 
                                 <div class="col-lg-3 text-end">
                                     <div class="d-flex gap-2 justify-content-end align-items-center">
-                                        <button class="btn-outline-neon py-2 px-3 small" type="button" data-bs-toggle="collapse" data-bs-target="#chat-@item.Id">
-                                            <i class="fas fa-comments me-1"></i> СВЯЗЬ
+                                        <button class="btn-chat-neon" type="button" data-bs-toggle="collapse" data-bs-target="#chat-@item.Id">
+                                            <div class="icon-wrapper">
+                                                <i class="fas fa-comment-dots"></i>
+                                                <span class="notification-badge"></span> 
+                                            </div>
+                                            <span>СВЯЗЬ</span>
                                         </button>
 
                                         <a href="@Url.Action("Details", "Tour", new { id = item.TourId })" class="btn-outline-neon py-2 px-3 small">
@@ -91,66 +95,42 @@
                                     <div class="row g-4">
                                         <div class="col-md-7">
                                             <div class="chat-history-box p-3">
-                                                <label class="text-primary-blue extra-small fw-black mb-3 text-uppercase">
-                                                    <i class="fas fa-history me-1"></i> История сообщений
-                                                </label>
+                                                <label class="text-primary-blue extra-small fw-black mb-3 text-uppercase">История сообщений</label>
 
-                                              
                                                 @if (!string.IsNullOrEmpty(item.Comments))
                                                 {
                                                     <div class="message-bubble user-msg mb-3">
-                                                        <small class="text-primфary-blue d-block fw-bold">Ваш вопрос/пожелание:</small>
+                                                        <small class="text-primary-blue d-block fw-bold">Ваш вопрос/пожелание:</small>
                                                         @item.Comments
                                                     </div>
                                                 }
 
-                                              
                                                 @if (!string.IsNullOrEmpty(item.ManagerComments))
                                                 {
                                                     <div class="message-bubble manager-msg">
-                                                        <small class="text-success-neon d-block fw-bold">
-                                                            Ответ менеджера @(string.IsNullOrEmpty(item.ManagerName) ? "" : $"({item.ManagerName})"):
-                                                        </small>
+                                                        <small class="text-success-neon d-block fw-bold">Ответ менеджера:</small>
                                                         @item.ManagerComments
+                                                        @if (!string.IsNullOrEmpty(item.ManagerName))
+                                                        {
+                                                            <div class="text-end mt-1 extra-small opacity-50">Менеджер: @item.ManagerName</div>
+                                                        }
                                                     </div>
                                                 }
-
-                                                @{
-                                                    bool hasUserMsg = !string.IsNullOrEmpty(item.Comments);
-                                                    bool hasManagerMsg = !string.IsNullOrEmpty(item.ManagerComments);
-                                                }
-
-                                                @if (!hasUserMsg && !hasManagerMsg)
+                                                else if (string.IsNullOrEmpty(item.Comments))
                                                 {
-                                     
-                                                    <div class="text-center py-4 text-gray small italic opacity-50">
-                                                        <i class="fas fa-comment-slash d-block mb-2"></i>
-                                                        Здесь будет ваша переписка с менеджером
-                                                    </div>
-                                                }
-                                                else if (hasUserMsg && !hasManagerMsg)
-                                                {
-                                               
-                                                    <div class="text-center py-3">
-                                                        <span class="text-warning small italic">
-                                                            <i class="fas fa-clock me-1"></i> Ожидайте ответа менеджера...
-                                                        </span>
-                                                    </div>
+                                                    <div class="text-center py-4 text-gray small italic">Здесь будет ваша переписка с менеджером</div>
                                                 }
                                             </div>
                                         </div>
 
                                         <div class="col-md-5">
-                                            @if (item.Status != "Cancelled")
-                                            {
-                                                <form asp-action="UpdateComments" asp-controller="Booking" method="post">
-                                                    @Html.AntiForgeryToken()
-                                                    <input type="hidden" name="bookingId" value="@item.Id" />
-                                                    <label class="text-white extra-small fw-black mb-2 text-uppercase">Написать менеджеру</label>
-                                                    <textarea name="newComment" class="form-control bg-dark border-secondary text-white small mb-2" rows="3" placeholder="Задайте вопрос или напишите пожелание..."></textarea>
-                                                    <button type="submit" class="btn-login-neon w-100 py-2 small">Отправить сообщение</button>
-                                                </form>
-                                            }
+                                            <form asp-action="UpdateComments" asp-controller="Booking" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="bookingId" value="@item.Id" />
+                                                <label class="text-white extra-small fw-black mb-2 text-uppercase">Написать сообщение</label>
+                                                <textarea name="newComment" class="form-control bg-dark border-secondary text-white small mb-2" rows="3" placeholder="Введите ваш вопрос..."></textarea>
+                                                <button type="submit" class="btn-login-neon w-100 py-2 small">Отправить</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -164,51 +144,92 @@
 </div>
 
 <style>
-    .tour-booking-card {
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255,255,255,0.05);
-        background: rgba(20, 20, 20, 1) !important;
+
+    button.btn-chat-neon {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        border: none;
+        background: none;
     }
 
-        .tour-booking-card:hover {
-            border-color: rgba(0, 106, 255, 0.4);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-    .btn-outline-neon {
-        background: rgba(0, 106, 255, 0.1) !important;
-        border: 1px solid rgba(0, 106, 255, 0.5) !important;
+    .smooth-wrapper .btn-chat-neon {
+        background-color: rgba(0, 106, 255, 0.15) !important;
+        border: 1px solid #006aff !important;
         color: #006aff !important;
-        padding: 8px 16px;
-        border-radius: 12px;
-        font-weight: bold;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        transition: all 0.3s ease;
+        padding: 10px 22px !important;
+        border-radius: 12px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        font-size: 0.75rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 1.2px !important;
+        text-transform: uppercase !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        cursor: pointer !important;
     }
 
-        .btn-outline-neon:hover {
-            background: #006aff !important;
-            color: #fff !important;
-            box-shadow: 0 0 15px rgba(0, 106, 255, 0.5);
+
+        .smooth-wrapper .btn-chat-neon:hover {
+            background-color: #006aff !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.6) !important;
+            transform: translateY(-2px) !important;
         }
 
-    .btn-outline-danger {
-        border: 1px solid #ff4d4d !important;
-        color: #ff4d4d !important;
-        background: transparent !important;
-        padding: 8px 16px !important;
-        border-radius: 50px !important;
-        transition: 0.3s;
-        font-size: 0.7rem;
-        font-weight: bold;
+        .smooth-wrapper .btn-chat-neon[aria-expanded="true"] {
+            background-color: rgba(0, 255, 136, 0.2) !important;
+            border-color: #00ff88 !important;
+            color: #00ff88 !important;
+        }
+
+    .btn-chat-neon .icon-wrapper {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
     }
 
-        .btn-outline-danger:hover {
-            background: #ff4d4d !important;
-            color: white !important;
+    .notification-badge {
+        position: absolute !important;
+        top: -4px !important;
+        right: -4px !important;
+        width: 8px !important;
+        height: 8px !important;
+        background-color: #00ff88 !important;
+        border-radius: 50% !important;
+        box-shadow: 0 0 10px #00ff88 !important;
+        animation: pulse-green-neon 2s infinite !important;
+        z-index: 2 !important;
+    }
+
+    @@keyframes pulse-green-neon {
+        0% {
+            transform: scale(0.9);
+            opacity: 0.7;
         }
+
+        50% {
+            transform: scale(1.3);
+            opacity: 1;
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        100% {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+    }
+
+    .tour-booking-card {
+        background: #111111 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 20px !important;
+    }
 
     .chat-history-box {
         background: rgba(255,255,255,0.03);
@@ -216,24 +237,20 @@
         padding: 20px;
     }
 
-    .message-bubble {
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        max-width: 90%;
-        margin-bottom: 10px;
-    }
-
     .user-msg {
-        background: rgba(0, 106, 255, 0.15);
+        background: rgba(0, 106, 255, 0.1);
         border-left: 4px solid #006aff;
-        color: #e0e0e0;
+        padding: 10px;
+        border-radius: 8px;
+        color: #fff;
     }
 
     .manager-msg {
         background: rgba(0, 255, 136, 0.1);
         border-left: 4px solid #00ff88;
-        color: #e0e0e0;
+        padding: 10px;
+        border-radius: 8px;
+        color: #fff;
     }
 
     .status-dot {
@@ -257,30 +274,5 @@
         .status-dot.cancelled {
             background: #ff4d4d;
             box-shadow: 0 0 10px #ff4d4d;
-        }
-
-    .border-top-dark {
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .text-success-neon {
-        color: #00ff88;
-    }
-
-    .extra-small {
-        font-size: 0.7rem;
-    }
-
-    .btn-login-neon {
-        background: #006aff;
-        border: none;
-        color: white;
-        border-radius: 8px;
-        transition: 0.3s;
-    }
-
-        .btn-login-neon:hover {
-            background: #0056cc;
-            box-shadow: 0 0 15px rgba(0, 106, 255, 0.4);
         }
 </style>

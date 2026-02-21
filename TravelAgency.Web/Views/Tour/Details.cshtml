@@ -105,7 +105,20 @@
 
                             <form asp-controller="Booking" asp-action="Create" method="post" class="modern-form">
                                 <input type="hidden" name="tourId" value="@Model.Id" />
-
+                               
+                               <div class="mb-4">
+                                    <label class="text-white small fw-bold mb-2 text-uppercase tracking-wider">
+                                        <i class="fas fa-ticket-alt text-primary-blue me-2"></i>Промокод
+                                    </label>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="promoInput" name="promoCode" placeholder="КОД" class="form-control modern-input promo-field flex-grow-1" />
+                                        <button type="button" onclick="validatePromo()" class="btn-check-promo">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                    <div id="promoStatus" class="extra-small mt-2 fw-bold" style="display:none; transition: 0.3s;"></div>
+                                </div>
+                             
                                 <div class="mb-4">
                                     <label class="text-white small fw-bold mb-2">КОЛИЧЕСТВО ПУТЕШЕСТВЕННИКОВ</label>
                                     <select name="peopleCount" class="form-select modern-input">
@@ -116,23 +129,45 @@
                                     </select>
                                 </div>
 
+
                                 <div class="status-indicator mb-4 @(Model.AvailablePlaces <= 3 ? "text-danger-neon" : "text-success-neon")">
                                     <i class="fas fa-bolt me-2"></i>
                                     @(Model.AvailablePlaces > 0 ? $"Доступно мест: {Model.AvailablePlaces}" : "Мест нет")
                                 </div>
 
+                                @if (TempData["ErrorMessage"] != null)
+                                {
+                                    <div class="alert alert-danger animate__animated animate__shakeX small py-2 mb-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                                    </div>
+                                }
+
                                 @if (User.Identity?.IsAuthenticated == true)
                                 {
-                                    <button type="submit" class="btn-login-neon w-100 py-3 mb-3">ЗАБРОНИРОВАТЬ</button>
+                                    @if (Model.IsAlreadyBookedByUser)
+                                    {
+                                        <div class="booked-status p-3 rounded-4 mb-3 text-center" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                            <button type="button" class="btn btn-secondary w-100 py-3 mb-2" disabled style="opacity: 0.6; border-radius: 12px; font-weight: 800;">
+                                                <i class="fas fa-check-double me-2"></i>ВЫ УЖЕ ЗАБРОНИРОВАЛИ
+                                            </button>
+                                            <a href="@Url.Action("Index", "Booking")" class="text-primary-blue d-block text-center small text-decoration-none fw-bold">
+                                                СМОТРЕТЬ В КАБИНЕТЕ <i class="fas fa-external-link-alt ms-1" style="font-size: 0.7rem;"></i>
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn-login-neon w-100 py-3 mb-3">ЗАБРОНИРОВАТЬ</button>
+                                    }
                                 }
                                 else
                                 {
-                                <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
-                                   class="btn-auth-neon w-100 mb-3">
-                                    <span class="btn-content">
-                                        <i class="fas fa-sign-in-alt me-2"></i>ВОЙТИ ДЛЯ БРОНИ
-                                    </span>
-                                </a>
+                                    <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
+                                       class="btn-auth-neon w-100 mb-3">
+                                        <span class="btn-content">
+                                            <i class="fas fa-sign-in-alt me-2"></i>ВОЙТИ ДЛЯ БРОНИ
+                                        </span>
+                                    </a>
                                 }
                             </form>
 
@@ -207,6 +242,27 @@
         transition: all 0.3s ease;
         border: none;
         overflow: hidden;
+    }
+
+    .promo-field {
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+        border: 1px dashed rgba(0, 106, 255, 0.3) !important;
+    }
+
+        .promo-field:focus {
+            border: 1px solid #006aff !important;
+            background: rgba(0, 106, 255, 0.05) !important;
+        }
+
+    .promo-input-wrapper {
+        position: relative;
+    }
+
+    .promo-field:not(:placeholder-shown) {
+        box-shadow: 0 0 15px rgba(0, 106, 255, 0.1);
+        border-style: solid !important;
     }
 
     .btn-edit-neon {
@@ -451,6 +507,39 @@
         font-size: 0.8rem;
         margin-bottom: 5px;
     }
+
+    .btn-check-promo {
+        background: rgba(0, 106, 255, 0.1);
+        border: 1px solid #006aff;
+        color: #006aff;
+        border-radius: 12px;
+        padding: 0 15px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-check-promo:hover {
+            background: #006aff;
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.5);
+        }
+  
+    @@keyframes shakeX {
+        from, to {
+            transform: translate3d(0, 0, 0);
+        }
+
+        10%, 30%, 50%, 70%, 90% {
+            transform: translate3d(-5px, 0, 0);
+        }
+
+        20%, 40%, 60%, 80% {
+            transform: translate3d(5px, 0, 0);
+        }
+    }
+
+    .animate__shakeX {
+        animation: shakeX 0.5s;
+    }
 </style>
 
 <script>
@@ -458,5 +547,38 @@
         document.getElementById('mainView').src = src;
         document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
+    }
+    async function validatePromo() {
+        const code = document.getElementById('promoInput').value;
+        const tourId = '@Model.Id';
+        const statusDiv = document.getElementById('promoStatus');
+        const input = document.getElementById('promoInput');
+
+        if (!code) {
+            statusDiv.style.display = 'none';
+            input.style.borderColor = 'rgba(255,255,255,0.1)';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Booking/CheckPromo?code=${code}&tourId=${tourId}`);
+            const data = await response.json();
+
+            statusDiv.style.display = 'block';
+
+            if (data.success) {
+                statusDiv.className = 'extra-small mt-2 text-success-neon animate__animated animate__fadeIn';
+                statusDiv.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${data.message}`;
+                input.style.border = '1px solid #00ff88';
+                input.style.boxShadow = '0 0 10px rgba(0, 255, 136, 0.2)';
+            } else {
+                statusDiv.className = 'extra-small mt-2 text-danger-neon animate__animated animate__shakeX';
+                statusDiv.innerHTML = `<i class="fas fa-times-circle me-1"></i> ${data.message}`;
+                input.style.border = '1px solid #ff4d4d';
+                input.style.boxShadow = '0 0 10px rgba(255, 77, 77, 0.2)';
+            }
+        } catch (error) {
+            console.error("Ошибка при проверке промокода:", error);
+        }
     }
 </script>

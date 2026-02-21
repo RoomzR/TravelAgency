@@ -77,61 +77,66 @@ namespace TravelAgency.BLL.Services
             {
                 var tour = await _tourRepository.GetByIdAsync(createDto.TourId);
                 if (tour == null)
-                    throw new ArgumentException("Tour not found");
-
-                var isAvailable = await CheckTourAvailabilityAsync(createDto.TourId, createDto.PeopleCount);
-                if (!isAvailable)
-                    throw new InvalidOperationException("Not enough available places");
+                    throw new KeyNotFoundException("Тур не найден.");
 
                 var hasBooking = await _bookingRepository.HasActiveBookingAsync(createDto.TourId, clientId);
                 if (hasBooking)
-                    throw new InvalidOperationException("You already have an active booking for this tour");
+                    throw new InvalidOperationException("У вас уже есть активное бронирование на этот тур.");
 
-                var totalPrice = await CalculateBookingPriceAsync(createDto.TourId, createDto.PeopleCount, createDto.PromoCode);
+                decimal totalPrice = tour.DiscountedPrice * createDto.PeopleCount;
+                decimal discountAmount = 0;
+                int? appliedPromoId = null;
+
+                if (!string.IsNullOrEmpty(createDto.PromoCode))
+                {
+                    var promo = await _promoCodeRepository.GetByCodeAsync(createDto.PromoCode);
+                    if (promo != null && await _promoCodeRepository.IsCodeValidAsync(createDto.PromoCode))
+                    {
+                        appliedPromoId = promo.Id;
+                        discountAmount = totalPrice * (promo.DiscountPercent / 100);
+
+                        if (promo.MaxdiscountAmount.HasValue && discountAmount > promo.MaxdiscountAmount.Value)
+                        {
+                            discountAmount = promo.MaxdiscountAmount.Value;
+                        }
+                    }
+                }
+
+                var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(createDto.TourId);
+                if (tour.MaxPeopleCount - bookedPlaces < createDto.PeopleCount)
+                    throw new InvalidOperationException("Недостаточно свободных мест на выбранный тур.");
 
                 var booking = new Booking
                 {
                     TourId = createDto.TourId,
                     ClientId = clientId,
                     PeopleCount = createDto.PeopleCount,
-                    TotalPrice = totalPrice,
+                    TotalPrice = totalPrice - discountAmount, 
+                    DiscountAmount = discountAmount,
+                    PromoCodeId = appliedPromoId,
                     Status = BookingStatus.Pending,
                     BookingDate = DateTime.UtcNow,
                     Comments = createDto.Comments
                 };
 
-                if (!string.IsNullOrEmpty(createDto.PromoCode))
-                {
-                    var promoCode = await _promoCodeRepository.GetByCodeAsync(createDto.PromoCode);
-                    if (promoCode != null && await _promoCodeRepository.IsCodeValidAsync(createDto.PromoCode))
-                    {
-                        booking.PromoCodeId = promoCode.Id;
-                        booking.DiscountAmount = totalPrice * (promoCode.DiscountPercent / 100);
-
-                        if (promoCode.MaxdiscountAmount.HasValue &&
-                            booking.DiscountAmount > promoCode.MaxdiscountAmount.Value)
-                        {
-                            booking.DiscountAmount = promoCode.MaxdiscountAmount.Value;
-                        }
-                    }
-                }
-
                 await _bookingRepository.CreateAsync(booking);
 
-                if (booking.PromoCodeId.HasValue)
+                if (appliedPromoId.HasValue)
                 {
-                    await _promoCodeRepository.IncrementUsesAsync(booking.PromoCodeId.Value);
+                    await _promoCodeRepository.IncrementUsesAsync(appliedPromoId.Value);
                 }
 
                 tour.BookingsCount++;
                 await _tourRepository.UpdateAsync(tour);
 
+                _logger.LogInformation("Бронирование {BookingId} успешно создано для пользователя {UserId}", booking.Id, clientId);
+
                 return _mapper.Map<BookingDTO>(booking);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating booking for user: {UserId}", clientId);
-                throw;
+                _logger.LogError(ex, "Ошибка при создании бронирования для пользователя: {UserId}", clientId);
+                throw; 
             }
         }
 
@@ -140,21 +145,37 @@ namespace TravelAgency.BLL.Services
             try
             {
                 var booking = await _bookingRepository.GetFullBookingAsync(updateDto.Id);
-                if (booking == null) return null;
+                if (booking == null)
+                {
+                    _logger.LogWarning("Бронирование с ID {BookingId} не найдено для обновления", updateDto.Id);
+                    return null;
+                }
 
                 booking.ManagerConfirmedId = updateDto.ManagerId;
+
+
+                booking.ManagerComments = updateDto.ManagerComments;
 
                 if (Enum.TryParse<BookingStatus>(updateDto.Status, out var newStatus))
                 {
                     booking.Status = newStatus;
                 }
+                else
+                {
+                    _logger.LogWarning("Некорректный статус: {Status} для бронирования {BookingId}", updateDto.Status, updateDto.Id);
+                }
 
                 await _bookingRepository.UpdateAsync(booking);
+
+                _logger.LogInformation("Менеджер {ManagerId} обновил бронирование {BookingId}. Новый статус: {Status}",
+                    updateDto.ManagerId, updateDto.Id, booking.Status);
+
                 return _mapper.Map<BookingDTO>(booking);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating booking status");
+                _logger.LogError(ex, "Ошибка при обновлении статуса бронирования {BookingId} менеджером {ManagerId}",
+                    updateDto.Id, updateDto.ManagerId);
                 throw;
             }
         }
@@ -267,5 +288,101 @@ namespace TravelAgency.BLL.Services
             }
         }
 
+        public async Task<DirectorStatsDTO> GetDirectorAnalyticsAsync(DateTime? dateFrom, DateTime? dateTo)
+        {
+            try
+            {
+                var bookings = await _bookingRepository.GetAllAsync();
+
+                if (dateFrom.HasValue)
+                {
+                    bookings = bookings.Where(b => b.BookingDate >= dateFrom.Value);
+                }
+
+                if (dateTo.HasValue)
+                {
+                    var endOfDay = dateTo.Value.Date.AddDays(1).AddTicks(-1);
+                    bookings = bookings.Where(b => b.BookingDate <= endOfDay);
+                }
+
+                var stats = new DirectorStatsDTO
+                {
+                    DateFrom = dateFrom,
+                    DateTo = dateTo,
+
+                    TotalBookings = bookings.Count(),
+                    ConfirmedBookings = bookings.Count(b => b.Status == BookingStatus.Confirmed),
+                    CancelledBookings = bookings.Count(b => b.Status == BookingStatus.Cancelled),
+
+                    TotalRevenue = bookings
+                        .Where(b => b.Status == BookingStatus.Confirmed)
+                        .Sum(b => b.TotalPrice - (b.DiscountAmount ?? 0)),
+
+                    TotalUniqueClients = bookings
+                        .Select(b => b.ClientId)
+                        .Distinct()
+                        .Count(),
+
+                    TopTours = bookings
+                        .Where(b => b.Tour != null)
+                        .GroupBy(b => b.Tour.Title)
+                        .OrderByDescending(g => g.Count())
+                        .Take(5)
+                        .ToDictionary(g => g.Key, g => g.Count()),
+
+                    ManagerRatings = bookings
+                        .Where(b => b.Status == BookingStatus.Confirmed && b.ManagerConfirmed != null)
+                        .GroupBy(b => b.ManagerConfirmedId)
+                        .Select(g => new ManagerRatingDTO
+                        {
+                            Name = $"{g.First().ManagerConfirmed.FirstName} {g.First().ManagerConfirmed.LastName}",
+                            ConfirmedCount = g.Count(),
+                            Revenue = g.Sum(b => b.TotalPrice - (b.DiscountAmount ?? 0))
+                        })
+                        .OrderByDescending(r => r.Revenue)
+                        .ToList()
+                };
+
+                return stats;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка генерации аналитики для директора");
+                throw;
+            }
+        }
+
+        public async Task<bool> IsTourBookedByUserAsync(int tourId, string userId)
+        {
+            return await _bookingRepository.ExistsActiveBookingAsync(tourId, userId);
+        }
+        public async Task UpdateClientCommentAsync(int bookingId, string comment, string userId)
+        {
+            try
+            {
+                var booking = await _bookingRepository.GetFullBookingAsync(bookingId);
+
+                if (booking == null)
+                {
+                    throw new KeyNotFoundException($"Бронирование с ID {bookingId} не найдено.");
+                }
+
+                if (booking.ClientId != userId)
+                {
+                    _logger.LogWarning("Попытка несанкционированного изменения комментария! Пользователь {UserId} пытался изменить бронь {BookingId}, которая ему не принадлежит.", userId, bookingId);
+                    throw new UnauthorizedAccessException("У вас нет прав для редактирования этого бронирования.");
+                }
+
+                booking.Comments = comment;
+
+                await _bookingRepository.UpdateAsync(booking);
+                _logger.LogInformation("Пользователь {UserId} обновил комментарий к бронированию {BookingId}.", userId, bookingId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при обновлении комментария для бронирования {BookingId}", bookingId);
+                throw;
+            }
+        }
     }
 }

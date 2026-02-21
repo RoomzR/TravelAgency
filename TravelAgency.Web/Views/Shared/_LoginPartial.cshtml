@@ -43,6 +43,20 @@
                         </a>
                     </li>
                 }
+                @if (User.IsInRole("Director"))
+                {
+                    <li class="dropdown-header text-uppercase opacity-50 small letter-spacing-2 mt-2">Управление бизнесом</li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Analytics" asp-action="Index">
+                            <i class="fas fa-chart-line me-2 text-neon-green"></i>Статистика продаж
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Staff" asp-action="Index">
+                            <i class="fas fa-users-cog me-2 text-neon-green"></i>Управление персоналом
+                        </a>
+                    </li>
+                }
 
                 <li><hr class="dropdown-divider"></li>
                 <li>

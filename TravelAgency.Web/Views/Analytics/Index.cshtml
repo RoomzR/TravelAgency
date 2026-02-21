@@ -1,0 +1,214 @@
+﻿@model TravelAgency.BLL.DTOs.DirectorStatsDTO
+
+@{
+    ViewData["Title"] = "Панель Директора";
+}
+
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container-fluid px-lg-5">
+
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-4">
+                <h1 class="text-white fw-black mb-0 text-uppercase tracking-wider">EXECUTIVE CENTER</h1>
+                <p class="text-primary-blue mb-0 small fw-bold">
+                    <i class="fas fa-chart-line me-2"></i>АНАЛИТИКА ПРОДАЖ
+                </p>
+            </div>
+            <div class="col-lg-8">
+                <form method="get" class="d-flex justify-content-lg-end gap-3 mt-3 mt-lg-0">
+                    <div class="input-group-modern">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="date" name="dateFrom" value="@Model.DateFrom?.ToString("yyyy-MM-dd")" class="modern-input small">
+                    </div>
+                    <div class="input-group-modern">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="date" name="dateTo" value="@Model.DateTo?.ToString("yyyy-MM-dd")" class="modern-input small">
+                    </div>
+                    <button type="submit" class="btn-login-neon py-2 px-4">
+                        <span>ОБНОВИТЬ</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stats-card-blue">
+                    <label>ВЫРУЧКА</label>
+                    <div class="value">@Model.TotalRevenue.ToString("N0") BYN</div>
+                    <i class="fas fa-coins icon"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card-blue">
+                    <label>ЗАЯВКИ</label>
+                    <div class="value text-white">@Model.TotalBookings</div>
+                    <i class="fas fa-file-invoice-dollar icon"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card-blue">
+                    <label>ЭФФЕКТИВНОСТЬ</label>
+                    @{
+                        var conv = Model.TotalBookings > 0 ? (double)Model.ConfirmedBookings / Model.TotalBookings * 100 : 0;
+                    }
+                    <div class="value" style="color: #00d2ff;">@conv.ToString("F1")%</div>
+                    <div class="progress mt-2" style="height: 3px; background: rgba(255,255,255,0.05);">
+                        <div class="progress-bar" style="width: @conv.ToString().Replace(",", ".")%; background: #006aff;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card-blue">
+                    <label>КЛИЕНТЫ</label>
+                    <div class="value text-white">@Model.TotalUniqueClients</div>
+                    <i class="fas fa-users icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="chart-container-dark">
+                    <h6 class="text-gray text-uppercase mb-4 small fw-bold">Динамика популярных туров</h6>
+                    <canvas id="directorChart" style="max-height: 350px;"></canvas>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="chart-container-dark h-100">
+                    <h6 class="text-gray text-uppercase mb-4 small fw-bold">Лидеры продаж</h6>
+                    <div class="d-flex flex-column gap-4">
+                        @foreach (var tour in Model.TopTours)
+                        {
+                            <div class="tour-stat-row">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-white-50 small">@tour.Key</span>
+                                    <span class="text-primary-blue fw-bold small">@tour.Value</span>
+                                </div>
+                                <div class="progress" style="height: 4px; background: rgba(0,106,255,0.05);">
+                                    <div class="progress-bar shadow-neon-blue" style="width: @(tour.Value * 10)%; background: #006aff;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container-dark mt-5">
+                <h6 class="text-gray text-uppercase mb-4 small fw-bold">Рейтинг эффективности менеджеров</h6>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover border-0">
+                        <thead>
+                            <tr class="text-gray extra-small text-uppercase">
+                                <th>Менеджер</th>
+                                <th class="text-center">Сделок</th>
+                                <th class="text-end">Прибыль</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var manager in Model.ManagerRatings)
+                            {
+                                <tr>
+                                    <td class="text-white fw-bold">
+                                        <i class="fas fa-user-circle me-2 text-primary-blue"></i>@manager.Name
+                                    </td>
+                                    <td class="text-center"><span class="badge-count">@manager.ConfirmedCount</span></td>
+                                    <td class="text-end text-primary-blue fw-bold">@manager.Revenue.ToString("N0") BYN</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stats-card-blue {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(0, 106, 255, 0.1);
+        padding: 25px;
+        border-radius: 20px;
+        position: relative;
+        transition: 0.3s;
+    }
+
+        .stats-card-blue:hover {
+            background: rgba(0, 106, 255, 0.03);
+            border-color: #006aff;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.1);
+        }
+
+        .stats-card-blue .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #006aff;
+        }
+
+        .stats-card-blue label {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stats-card-blue .icon {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 2rem;
+            color: #006aff;
+            opacity: 0.1;
+        }
+
+    .chart-container-dark {
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 30px;
+    }
+
+    .shadow-neon-blue {
+        box-shadow: 0 0 10px rgba(0, 106, 255, 0.5);
+    }
+
+    .modern-input {
+        background: #0a0a0a !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 8px 12px 8px 40px !important;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('directorChart').getContext('2d');
+    const data = @Json.Serialize(Model.TopTours);
+
+    new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: Object.keys(data),
+            datasets: [{
+                data: Object.values(data),
+                borderColor: '#006aff',
+                backgroundColor: 'rgba(0, 106, 255, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#006aff',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#555' } },
+                x: { grid: { display: false }, ticks: { color: '#555' } }
+            }
+        }
+    });
+</script>

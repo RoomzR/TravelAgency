@@ -14,10 +14,17 @@
             </div>
             <div class="text-end">
                 <span class="btn-outline-neon py-2 px-4 no-hover">
-                    АКТИВНЫХ ЗАЯВОК: @Model.Count()
+                    АКТИВНЫХ ЗАЯВОК: @Model.Count(b => b.Status.ToString() == "Pending")
                 </span>
             </div>
         </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success bg-dark text-neon-green border-neon-green mb-4">
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
         <div class="table-responsive">
             <table class="table custom-neon-table">
@@ -29,6 +36,7 @@
                         <th>ТУР</th>
                         <th>ЛЮДЕЙ</th>
                         <th>СУММА</th>
+                        <th>СТАТУС</th>
                         <th class="text-end">ДЕЙСТВИЯ</th>
                     </tr>
                 </thead>
@@ -54,9 +62,31 @@
                             <td class="text-white fw-medium">@item.TourTitle</td>
                             <td><span class="badge-count">@item.PeopleCount</span></td>
                             <td class="text-neon-green fw-bold">@item.FinalPrice.ToString("N0") BYN</td>
+
+                            <td>
+                                @switch (item.Status.ToString())
+                                {
+                                    case "Confirmed":
+                                        <span class="text-neon-green small fw-black text-uppercase tracking-wider">
+                                            <i class="fas fa-check-circle me-1"></i> OK
+                                        </span>
+                                        break;
+                                    case "Cancelled":
+                                        <span class="text-danger small fw-black text-uppercase tracking-wider">
+                                            <i class="fas fa-times-circle me-1"></i> ОТКЛОНЕН
+                                        </span>
+                                        break;
+                                    default:
+                                        <span class="text-warning small fw-black text-uppercase tracking-wider animate-flicker">
+                                            <i class="fas fa-sync-alt fa-spin me-1"></i> NEW
+                                        </span>
+                                        break;
+                                }
+                            </td>
+
                             <td class="text-end">
                                 <button class="btn-login-neon py-2 px-3 small" data-bs-toggle="modal" data-bs-target="#modal-@item.Id" style="font-size: 0.7rem;">
-                                    <span>ОБРАБОТАТЬ</span>
+                                    <span>@(item.Status.ToString() == "Pending" ? "ОБРАБОТАТЬ" : "ИЗМЕНИТЬ")</span>
                                 </button>
                             </td>
                         </tr>
@@ -64,7 +94,7 @@
                         <div class="modal fade" id="modal-@item.Id" tabindex="-1">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content auth-card-neon border-primary-blue" style="background: #0a0a0a !important; border-radius: 20px;">
-                                    <form asp-action="UpdateStatus" method="post">
+                                    <form asp-action="UpdateStatus" asp-controller="Booking" method="post">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
 
@@ -74,6 +104,16 @@
                                         </div>
 
                                         <div class="modal-body p-4">
+                                            @if (item.Status.ToString() != "Pending")
+                                            {
+                                                <div class="mb-4 p-2 rounded-2" style="background: rgba(0, 106, 255, 0.1); border: 1px solid rgba(0, 106, 255, 0.2);">
+                                                    <span class="text-gray extra-small d-block text-uppercase">Последний менеджер:</span>
+                                                    <span class="text-primary-blue small fw-bold">
+                                                        <i class="fas fa-user-shield me-1"></i> @(item.ManagerName ?? "Система")
+                                                    </span>
+                                                </div>
+                                            }
+
                                             <div class="mb-4 p-3 rounded-3" style="background: rgba(0, 106, 255, 0.05); border: 1px dashed rgba(0, 106, 255, 0.3);">
                                                 <label class="text-primary-blue small fw-bold mb-1 d-block text-uppercase">Заметка клиента:</label>
                                                 <p class="text-white small mb-0">
@@ -86,8 +126,9 @@
                                                 <div class="input-group-modern">
                                                     <i class="fas fa-exclamation-circle"></i>
                                                     <select name="status" class="modern-input w-100 custom-select-dark">
-                                                        <option value="Confirmed">Подтвердить (Confirmed)</option>
-                                                        <option value="Cancelled">Отклонить (Cancelled)</option>
+                                                        <!option value="Confirmed" @(item.Status.ToString() == "Confirmed" ? "selected" : "")>Подтвердить (Confirmed)</!option>
+                                                        <!option value="Cancelled" @(item.Status.ToString() == "Cancelled" ? "selected" : "")>Отклонить (Cancelled)</!option>
+                                                        <!option value="Pending" @(item.Status.ToString() == "Pending" ? "selected" : "")>В ожидание (Pending)</!option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -96,7 +137,7 @@
                                                 <label class="text-gray small fw-bold mb-2 d-block">КОММЕНТАРИЙ МЕНЕДЖЕРА</label>
                                                 <div class="input-group-modern">
                                                     <i class="fas fa-comment-dots"></i>
-                                                    <textarea name="managerComments" class="modern-input w-100" rows="3" placeholder="Напишите клиенту (увидит в ЛК)..."></textarea>
+                                                    <textarea name="managerComments" class="modern-input w-100" rows="3" placeholder="Напишите клиенту (увидит в ЛК)...">@item.ManagerComments</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -110,8 +151,6 @@
                                 </div>
                             </div>
                         </div>
-
-                       
                     }
                 </tbody>
             </table>
@@ -120,6 +159,33 @@
 </div>
 
 <style>
+    /* Анимация мерцания для новых заявок */
+    @@keyframes flicker {
+        0% {
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        50% {
+            opacity: 0.5;
+            text-shadow: 0 0 0px rgba(255, 204, 0, 0);
+        }
+
+        100% {
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+    }
+
+    .animate-flicker {
+        animation: flicker 2s infinite;
+    }
+
+    .border-neon-green {
+        border: 1px solid #00ff88 !important;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+    }
+
     .modern-input {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -144,7 +210,7 @@
         background-size: 16px 12px !important;
     }
 
-    .custom-select-dark option {
+        .custom-select-dark option {
             background: #0a0a0a !important;
             color: white !important;
         }
@@ -195,11 +261,6 @@
         color: rgba(255, 255, 255, 0.5) !important;
     }
 
-    .extra-small i {
-        width: 14px;
-        text-align: center;
-    }
-
     .extra-small {
         font-size: 0.7rem;
         color: rgba(255,255,255,0.4);
@@ -244,19 +305,6 @@
         border-radius: 20px !important;
     }
 
-    .custom-select-dark {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        background-size: 16px 12px;
-    }
-
-        .custom-select-dark option {
-            background-color: #0a0a0a;
-            color: white;
-        }
-
     .badge-count {
         background: rgba(255,255,255,0.1);
         padding: 5px 12px;
@@ -267,9 +315,5 @@
     .no-hover:hover {
         background: transparent !important;
         color: #006aff !important;
-    }
-
-    .border-bottom-dark {
-        border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 </style>

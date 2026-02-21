@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TravelAgency.BLL.DTOs;
 using TravelAgency.BLL.DTOs;
 using TravelAgency.BLL.Interfaces;
+using TravelAgency.BLL.Services;
 using TravelAgency.DAL.Entities;
 using TravelAgency.Web.Models.ViewModels;
 
@@ -16,19 +17,22 @@ namespace TravelAgency.Web.Controllers
         private readonly ITourTypeService _tourTypeService;
         private readonly ILogger<TourController> _logger;
         private readonly UserManager<ApplicationUser> UserManager;
+        private readonly IBookingService _bookingService;
 
         public TourController(
             ITourService tourService,
             ICountryService countryService,
             ITourTypeService tourTypeService,
             ILogger<TourController> logger,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IBookingService bookingService)
         {
             _tourService = tourService;
             _countryService = countryService;
             _tourTypeService = tourTypeService;
             _logger = logger;
             UserManager = userManager;
+            _bookingService = bookingService;
         }
 
         public async Task<IActionResult> Index(
@@ -75,24 +79,22 @@ namespace TravelAgency.Web.Controllers
             try
             {
                 var tour = await _tourService.GetTourByIdAsync(id);
+                if (tour == null) return RedirectToAction("Index");
 
-                if (tour == null)
+                if (User.Identity.IsAuthenticated)
                 {
-                    TempData["ErrorMessage"] = "Тур не найден";
-                    return RedirectToAction("Index");
+                    var userId = UserManager.GetUserId(User);
+                    tour.IsAlreadyBookedByUser = await _bookingService.IsTourBookedByUserAsync(id, userId);
                 }
 
                 await _tourService.IncrementTourViewsAsync(id);
-
                 return View(tour);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при загрузке тура {TourId}", id);
-                TempData["ErrorMessage"] = "Произошла ошибка при загрузке тура";
+                _logger.LogError(ex, "Ошибка");
                 return RedirectToAction("Index");
             }
-
         }
 
         [HttpGet]

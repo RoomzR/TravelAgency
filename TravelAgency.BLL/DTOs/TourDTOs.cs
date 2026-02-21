@@ -31,6 +31,9 @@
         public int? AvailablePlaces { get; set; }
         public double? AverageRating { get; set; }
         public decimal? DiscountedPrice { get; set; }
+
+
+        public bool IsAlreadyBookedByUser { get; set; }
     }
 
     public class TourCreateDTO

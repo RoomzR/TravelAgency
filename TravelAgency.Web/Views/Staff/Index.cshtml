@@ -1,0 +1,110 @@
+﻿@model IEnumerable<TravelAgency.Web.Models.ViewModels.StaffUserViewModel>
+
+@{
+    ViewData["Title"] = "Управление персоналом";
+}
+
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container-fluid px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="text-white fw-black mb-0 text-uppercase tracking-wider">STAFF CONTROL</h1>
+                <p class="text-primary-blue mb-0 small fw-bold">
+                    <i class="fas fa-user-shield me-2"></i>ДОСТУП И РОЛИ СОТРУДНИКОВ
+                </p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table custom-neon-table">
+                <thead>
+                    <tr>
+                        <th>СОТРУДНИК</th>
+                        <th>ТЕКУЩИЕ РОЛИ</th>
+                        <th>СТАТУС</th>
+                        <th class="text-end">ДЕЙСТВИЯ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-glow small">
+                                        @(user.FirstName?.Substring(0, 1).ToUpper())@(user.LastName?.Length > 0 ? user.LastName.Substring(0, 1).ToUpper() : "")
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-bold">@user.FirstName @user.LastName</div>
+                                        <div class="extra-small text-primary-blue opacity-75">@user.Email</div>
+                                        <div class="extra-small text-gray" style="font-size: 0.6rem;">ID: @user.Id.Substring(0, 8)</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="badge @(role == "Director" ? "bg-primary" : "bg-dark border-primary-blue") extra-small px-3">
+                                            @role.ToUpper()
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (user.IsLockedOut)
+                                {
+                                    <span class="text-danger small fw-bold"><i class="fas fa-ban me-1"></i>ЗАБЛОКИРОВАН</span>
+                                }
+                                else
+                                {
+                                    <span class="text-neon-green small fw-bold"><i class="fas fa-check-circle me-1"></i>АКТИВЕН</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn-login-neon py-2 px-3 small" data-bs-toggle="dropdown">
+                                        <span>УПРАВЛЯТЬ</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end modern-dropdown">
+                                        <li>
+                                            <form asp-action="ToggleBlock" method="post">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="dropdown-item @(user.IsLockedOut ? "text-success" : "text-danger-neon")">
+                                                    <i class="fas @(user.IsLockedOut ? "fa-unlock" : "fa-user-slash") me-2"></i>
+                                                    @(user.IsLockedOut ? "Разблокировать" : "Заблокировать")
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header extra-small text-uppercase">Изменить роль</li>
+                                        <li>
+                                            <a class="dropdown-item" asp-action="ChangeRole" asp-route-userId="@user.Id" asp-route-role="Manager">Менеджер</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-action="ChangeRole" asp-route-userId="@user.Id" asp-route-role="Admin">Админ</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-glow.small {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .bg-dark.border-primary-blue {
+        border: 1px solid rgba(0, 106, 255, 0.5);
+        background: transparent !important;
+        color: #006aff;
+    }
+</style>
