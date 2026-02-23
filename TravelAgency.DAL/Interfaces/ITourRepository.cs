@@ -38,5 +38,11 @@ namespace TravelAgency.DAL.Interfaces
             bool? sortDescending = null,
             int pageNumber = 1,
             int pageSize = 10);
+
+        Task<IEnumerable<Hotel>> GetAllHotelsAsync();
+        Task<IEnumerable<Hotel>> GetHotelsByCountryAsync(int? countryId);
+        Task<Hotel?> GetHotelByIdAsync(int id);
+
+        Task<IEnumerable<City>> GetCitiesByCountryAsync(int countryId);
     }
 }

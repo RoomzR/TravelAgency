@@ -63,6 +63,7 @@ builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 //builder.Services.AddScoped<IContactService, ContactService>();
 //builder.Services.AddScoped<IFAQService, FAQService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

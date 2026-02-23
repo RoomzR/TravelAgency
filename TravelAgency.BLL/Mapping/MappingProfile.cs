@@ -16,6 +16,16 @@ namespace TravelAgency.BLL.Mapping
                 .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Hotel.Name))
                 .ReverseMap();
 
+            CreateMap<ApplicationUser, UserDTO>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
+                    (string.IsNullOrEmpty(src.FirstName) && string.IsNullOrEmpty(src.LastName))
+                    ? src.UserName
+                    : $"{src.FirstName} {src.LastName}"))
+                .ForMember(dest => dest.RegistrationDate, opt => opt.MapFrom(src => src.RegistrationDate))
+                .ForMember(dest => dest.IsBlocked, opt => opt.Ignore())
+                .ForMember(dest => dest.RoleName, opt => opt.Ignore());
+                
+
             CreateMap<TourCreateDTO, Tour>();
             CreateMap<TourUpdateDTO, Tour>();
 

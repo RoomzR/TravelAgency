@@ -43,6 +43,26 @@
                         </a>
                     </li>
                 }
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="dropdown-header text-uppercase  small letter-spacing-2 mt-2">Системное управление</li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Admin" asp-action="Users">
+                            <i class="fas fa-user-shield me-2 "></i>Управление доступом
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Admin" asp-action="Reviews">
+                            <i class="fas fa-star me-2 "></i>Модерация отзывов
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="Admin" asp-action="Promocodes">
+                            <i class="fas fa-ticket-alt me-2 "></i>Промокоды
+                        </a>
+                    </li>
+                    
+                }
                 @if (User.IsInRole("Director"))
                 {
                     <li class="dropdown-header text-uppercase opacity-50 small letter-spacing-2 mt-2">Управление бизнесом</li>

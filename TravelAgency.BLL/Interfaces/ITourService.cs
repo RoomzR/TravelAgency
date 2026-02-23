@@ -14,5 +14,8 @@ namespace TravelAgency.BLL.Interfaces
         Task<bool> DeleteTourAsync(int id);
         Task<bool> ToggleTourStatusAsync(int id, bool isActive);
         Task IncrementTourViewsAsync(int id);
+        Task<IEnumerable<HotelDTO>> GetAllHotelsAsync();
+        Task<IEnumerable<HotelDTO>> GetHotelsByCountryAsync(int? countryId);
+        Task<IEnumerable<CityDTO>> GetCitiesByCountryAsync(int countryId);
     }
 }

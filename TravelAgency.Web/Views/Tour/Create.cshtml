@@ -61,6 +61,7 @@
                                 <div class="col-12 border-bottom-dark pb-2 mt-5">
                                     <h5 class="text-white-50 small text-uppercase fw-bold">2. Локация и отель</h5>
                                 </div>
+                                
 
                                 <div class="col-md-4">
                                     <label asp-for="CountryId" class="label-tech">Страна</label>
@@ -71,6 +72,25 @@
                                             <option value="">Выбор страны...</option>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="CityId" class="label-tech">Город</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-city"></i> <select asp-for="CityId" id="CityId" class="modern-input w-100 custom-select-dark">
+                                            <option value="">Сначала выберите страну...</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mt-3">
+                                    <label asp-for="HotelId" class="label-tech">Конкретный отель</label>
+                                    <div class="input-group-modern">
+                                        <i class="fas fa-hotel"></i>
+                                        <select asp-for="HotelId" id="HotelId" class="modern-input w-100 custom-select-dark">
+                                            <option value="">Сначала выберите город...</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="HotelId" class="text-danger-neon small"></span>
                                 </div>
 
                                 <div class="col-md-4">
@@ -136,7 +156,9 @@
                                         <button type="submit" class="btn-login-neon py-3 px-5 flex-grow-1">
                                             <span><i class="fas fa-cloud-upload-alt me-2"></i>ОПУБЛИКОВАТЬ</span>
                                         </button>
-                                        <a asp-action="Index" class="btn-outline-neon py-3 px-4">ОТМЕНА</a>
+                                        <a asp-action="Index" class="btn-outline-neon py-3 px-4">
+                                            <i class="fas fa-times me-2"></i>ОТМЕНА
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -149,6 +171,38 @@
 </div>
 
 <style>
+    .btn-outline-neon {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+        .btn-outline-neon:hover {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.05);
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.2);
+            transform: translateY(-2px);
+        }
+
+
+        .btn-outline-neon i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-outline-neon:hover i {
+            transform: rotate(90deg);
+        }
     .modern-input {
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -217,3 +271,42 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 </style>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#CountryId').change(function() {
+                var countryId = $(this).val();
+                var citySelect = $('#CityId');
+                var hotelSelect = $('#HotelId');
+
+                citySelect.empty().append('<option value="">Загрузка городов...</option>');
+                hotelSelect.empty().append('<option value="">Загрузка отелей...</option>');
+
+                if (countryId) {
+                    $.getJSON('@Url.Action("GetCitiesByCountry", "Tour")', { countryId: countryId }, function(data) {
+                        citySelect.empty().append('<option value="">Выберите город...</option>');
+                        $.each(data, function(i, item) {
+                            citySelect.append($('<option>', {
+                                value: item.id,
+                                text: item.name
+                            }));
+                        });
+                    });
+
+                    $.getJSON('@Url.Action("GetHotelsByCountry", "Tour")', { countryId: countryId }, function(data) {
+                        hotelSelect.empty().append('<option value="">Выберите отель...</option>');
+                        $.each(data, function(i, item) {
+                            hotelSelect.append($('<option>', {
+                                value: item.id,
+                                text: item.name
+                            }));
+                        });
+                    });
+                } else {
+                    citySelect.empty().append('<option value="">Сначала выберите страну...</option>');
+                    hotelSelect.empty().append('<option value="">Сначала выберите страну...</option>');
+                }
+            });
+        });
+    </script>
+}

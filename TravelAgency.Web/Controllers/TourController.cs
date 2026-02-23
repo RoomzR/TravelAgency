@@ -161,11 +161,10 @@ namespace TravelAgency.Web.Controllers
         [Authorize(Roles = "Admin, Director, Manager")]
         public async Task<IActionResult> Create()
         {
-            var countries = await _countryService.GetAllCountriesAsync();
-            var tourTypes = await _tourTypeService.GetAllTourTypesAsync();
+            ViewBag.Countries = await _countryService.GetAllCountriesAsync();
+            ViewBag.TourTypes = await _tourTypeService.GetAllTourTypesAsync();
 
-            ViewBag.Countries = countries;
-            ViewBag.TourTypes = tourTypes;
+            ViewBag.Hotels = await _tourService.GetAllHotelsAsync();
 
             return View(new TourCreateDTO());
         }
@@ -173,19 +172,17 @@ namespace TravelAgency.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Director, Manager")]
-        public async Task<IActionResult> Create(TourCreateDTO model, string imageUrl) 
+        public async Task<IActionResult> Create(TourCreateDTO model, string imageUrl)
         {
             if (!string.IsNullOrEmpty(imageUrl))
             {
                 model.ImageUrlsJson = $"[\"{imageUrl}\"]";
             }
-            else
+            else if (string.IsNullOrEmpty(model.ImageUrlsJson))
             {
                 model.ImageUrlsJson = "[\"/img/tours/default-tour.jpg\"]";
             }
 
-            if (model.CityId == 0) model.CityId = 1;
-            if (model.HotelId == 0) model.HotelId = 1;
             model.IsActive = true;
 
             if (ModelState.IsValid)
@@ -200,16 +197,30 @@ namespace TravelAgency.Web.Controllers
                 }
                 catch (Exception ex)
                 {
-                    var innerMessage = ex.InnerException?.Message ?? ex.Message;
-                    _logger.LogError(ex, "Ошибка при сохранении: {Msg}", innerMessage);
-                    ModelState.AddModelError("", "Ошибка базы данных: " + innerMessage);
+                    _logger.LogError(ex, "Ошибка при сохранении тура");
+                    ModelState.AddModelError("", "Ошибка сохранения: " + ex.Message);
                 }
             }
 
             ViewBag.Countries = await _countryService.GetAllCountriesAsync();
             ViewBag.TourTypes = await _tourTypeService.GetAllTourTypesAsync();
+            ViewBag.Hotels = await _tourService.GetAllHotelsAsync();
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetHotelsByCountry(int countryId)
+        {
+            var hotels = await _tourService.GetHotelsByCountryAsync(countryId);
+            return Json(hotels.Select(h => new { id = h.Id, name = h.Name }));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCitiesByCountry(int countryId)
+        {
+            var cities = await _tourService.GetCitiesByCountryAsync(countryId);
+            return Json(cities.Select(c => new { id = c.Id, name = c.Name }));
         }
     }
 }

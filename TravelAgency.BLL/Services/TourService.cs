@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TravelAgency.BLL.DTOs;
-using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
+using TravelAgency.DAL.Entities;
 using TravelAgency.DAL.Interfaces;
 
 namespace TravelAgency.BLL.Services
@@ -34,7 +35,8 @@ namespace TravelAgency.BLL.Services
                 if (tour == null) return null;
 
                 var dto = _mapper.Map<TourDTO>(tour);
-                await EnrichTourDto(tour, dto);
+                dto.AvailablePlaces = tour.MaxPeopleCount - await _bookingRepository.GetBookedPlacesAsync(id);
+
                 return dto;
             }
             catch (Exception ex)
@@ -47,19 +49,19 @@ namespace TravelAgency.BLL.Services
         public async Task<IEnumerable<TourDTO>> GetActiveToursAsync()
         {
             var tours = await _tourRepository.GetActiveToursAsync();
-            return await MapAndEnrichTours(tours);
+            return await MapAndEnrichList(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetHotDealsAsync(int count = 4)
         {
             var tours = await _tourRepository.GetHotDealsAsync(count);
-            return await MapAndEnrichTours(tours);
+            return await MapAndEnrichList(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> GetPopularToursAsync(int count = 6)
         {
             var tours = await _tourRepository.GetPopularToursAsync(count);
-            return await MapAndEnrichTours(tours);
+            return await MapAndEnrichList(tours);
         }
 
         public async Task<IEnumerable<TourDTO>> SearchToursAsync(TourSearchDTO searchDto)
@@ -83,37 +85,35 @@ namespace TravelAgency.BLL.Services
                     pageSize: searchDto.PageSize
                 );
 
-                return await MapAndEnrichTours(tours);
+                return await MapAndEnrichList(tours);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error searching tours");
-                return new List<TourDTO>();
+                return Enumerable.Empty<TourDTO>();
             }
         }
 
         public async Task<TourDTO> CreateTourAsync(TourCreateDTO createDto, string createdById)
         {
-            try
-            {
-                var tour = _mapper.Map<Tour>(createDto);
-                tour.CreatedById = createdById;
-                tour.CreatedDate = DateTime.UtcNow;
-                tour.ViewsCount = 0;
-                tour.BookingsCount = 0;
-                tour.IsActive = true;
+            var tour = _mapper.Map<Tour>(createDto);
 
-                await _tourRepository.CreateAsync(tour);
-
-                var dto = _mapper.Map<TourDTO>(tour);
-                await EnrichTourDto(tour, dto);
-                return dto;
-            }
-            catch (Exception ex)
+            if (tour.HotelId.HasValue)
             {
-                _logger.LogError(ex, "Error creating tour");
-                throw;
+                var hotel = await _tourRepository.GetHotelByIdAsync(tour.HotelId.Value);
+                if (hotel != null)
+                {
+                    tour.CityId = hotel.CityId;
+                }
             }
+
+
+            tour.CreatedById = createdById;
+            tour.CreatedDate = DateTime.UtcNow;
+            tour.IsActive = true;
+
+            await _tourRepository.CreateAsync(tour);
+            return _mapper.Map<TourDTO>(tour);
         }
 
         public async Task<TourDTO?> UpdateTourAsync(TourUpdateDTO updateDto)
@@ -126,9 +126,7 @@ namespace TravelAgency.BLL.Services
                 _mapper.Map(updateDto, tour);
                 await _tourRepository.UpdateAsync(tour);
 
-                var dto = _mapper.Map<TourDTO>(tour);
-                await EnrichTourDto(tour, dto);
-                return dto;
+                return _mapper.Map<TourDTO>(tour);
             }
             catch (Exception ex)
             {
@@ -149,10 +147,11 @@ namespace TravelAgency.BLL.Services
                 {
                     tour.IsActive = false;
                     await _tourRepository.UpdateAsync(tour);
-                    return true;
                 }
-
-                await _tourRepository.DeleteAsync(id);
+                else
+                {
+                    await _tourRepository.DeleteAsync(id);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -164,58 +163,54 @@ namespace TravelAgency.BLL.Services
 
         public async Task<bool> ToggleTourStatusAsync(int id, bool isActive)
         {
-            try
-            {
-                var tour = await _tourRepository.GetByIdAsync(id);
-                if (tour == null) return false;
+            var tour = await _tourRepository.GetByIdAsync(id);
+            if (tour == null) return false;
 
-                tour.IsActive = isActive;
-                await _tourRepository.UpdateAsync(tour);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error toggling tour status for ID: {TourId}", id);
-                throw;
-            }
+            tour.IsActive = isActive;
+            await _tourRepository.UpdateAsync(tour);
+            return true;
         }
 
-        public async Task IncrementTourViewsAsync(int id)
+        public async Task IncrementTourViewsAsync(int id) =>
+            await _tourRepository.IncrementViewsAsync(id);
+
+        private async Task<IEnumerable<TourDTO>> MapAndEnrichList(IEnumerable<Tour> tours)
+        {
+            var dtos = _mapper.Map<IEnumerable<TourDTO>>(tours).ToList();
+
+            foreach (var dto in dtos)
+            {
+
+            }
+
+            return dtos;
+        }
+
+        public async Task<IEnumerable<HotelDTO>> GetAllHotelsAsync()
+        {
+            var hotels = await _tourRepository.GetAllHotelsAsync();
+            return _mapper.Map<IEnumerable<HotelDTO>>(hotels);
+        }
+
+        public async Task<IEnumerable<HotelDTO>> GetHotelsByCountryAsync(int? countryId) 
         {
             try
             {
-                await _tourRepository.IncrementViewsAsync(id);
+                
+                var hotels = await _tourRepository.GetHotelsByCountryAsync(countryId);
+
+                return _mapper.Map<IEnumerable<HotelDTO>>(hotels);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error incrementing views for tour ID: {TourId}", id);
+                _logger.LogError(ex, "Ошибка при получении отелей для страны {CountryId}", countryId);
+                return Enumerable.Empty<HotelDTO>();
             }
         }
-
-        private async Task<IEnumerable<TourDTO>> MapAndEnrichTours(IEnumerable<Tour> tours)
+        public async Task<IEnumerable<CityDTO>> GetCitiesByCountryAsync(int countryId)
         {
-            var tourDtos = new List<TourDTO>();
-
-            foreach (var tour in tours)
-            {
-                var dto = _mapper.Map<TourDTO>(tour);
-                await EnrichTourDto(tour, dto);
-                tourDtos.Add(dto);
-            }
-
-            return tourDtos;
-        }
-
-        private async Task EnrichTourDto(Tour tour, TourDTO dto)
-        {
-            dto.CountryName = tour.Country?.Name ?? "Не указано";
-            dto.CityName = tour.City?.Name ?? "Не указано";
-            dto.HotelCategoryName = tour.HotelCategory?.Name ?? "Не указано";
-            dto.TourTypeName = tour.TourType?.Name ?? "Не указано";
-            dto.HotelName = tour.Hotel?.Name;
-
-            var bookedPlaces = await _bookingRepository.GetBookedPlacesAsync(tour.Id);
-            dto.AvailablePlaces = tour.MaxPeopleCount - bookedPlaces;
+            var cities = await _tourRepository.GetCitiesByCountryAsync(countryId);
+            return _mapper.Map<IEnumerable<CityDTO>>(cities);
         }
     }
 }

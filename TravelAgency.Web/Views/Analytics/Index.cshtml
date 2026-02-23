@@ -97,7 +97,7 @@
             <div class="chart-container-dark mt-5">
                 <h6 class="text-gray text-uppercase mb-4 small fw-bold">Рейтинг эффективности менеджеров</h6>
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover border-0">
+                    <table class="table custom-neon-table align-middle">
                         <thead>
                             <tr class="text-gray extra-small text-uppercase">
                                 <th>Менеджер</th>
@@ -112,8 +112,12 @@
                                     <td class="text-white fw-bold">
                                         <i class="fas fa-user-circle me-2 text-primary-blue"></i>@manager.Name
                                     </td>
-                                    <td class="text-center"><span class="badge-count">@manager.ConfirmedCount</span></td>
-                                    <td class="text-end text-primary-blue fw-bold">@manager.Revenue.ToString("N0") BYN</td>
+                                    <td class="text-center">
+                                        <span class="neon-value-white">@manager.ConfirmedCount</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="neon-value-white fw-bold">@manager.Revenue.ToString("N0") BYN</span>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -125,6 +129,74 @@
 </div>
 
 <style>
+    .neon-value-white {
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.1);
+        letter-spacing: 0.5px;
+    }
+
+   
+    .custom-neon-table tbody tr:hover .neon-value-white {
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 25px rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .badge-count.neon-value-white {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .custom-neon-table {
+        border-collapse: separate;
+        border-spacing: 0 10px; 
+    }
+
+        .custom-neon-table thead th {
+            border: none;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            padding: 15px 20px;
+        }
+
+        .custom-neon-table tbody tr {
+            background: rgba(255, 255, 255, 0.02) !important;
+            transition: all 0.3s ease;
+        }
+
+            .custom-neon-table tbody tr:hover {
+                background: rgba(0, 106, 255, 0.05) !important;
+                box-shadow: 0 0 20px rgba(0, 106, 255, 0.1);
+                transform: scale(1.002);
+            }
+
+        .custom-neon-table td {
+            border: none;
+            padding: 20px;
+            vertical-align: middle;
+        }
+
+        .custom-neon-table tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .custom-neon-table tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+    .avatar-glow {
+        width: 45px;
+        height: 45px;
+        background: rgba(0, 106, 255, 0.1);
+        border: 1px solid rgba(0, 106, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #006aff;
+        font-size: 1.2rem;
+        text-shadow: 0 0 10px rgba(0, 106, 255, 0.5);
+    }
     .stats-card-blue {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(0, 106, 255, 0.1);

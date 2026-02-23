@@ -1,0 +1,241 @@
+﻿@model IEnumerable<TravelAgency.BLL.DTOs.PromoCodeDTO>
+
+<div class="smooth-wrapper bg-black py-5 min-vh-100">
+    <div class="container-fluid px-lg-5 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="text-white fw-black mb-0 text-uppercase tracking-wider">MARKETING: PROMOCODES</h1>
+                <p class="text-primary-blue small fw-bold mb-0">УПРАВЛЕНИЕ СКИДКАМИ И АКЦИЯМИ</p>
+            </div>
+            <button class="btn-login-neon py-2 px-4" data-bs-toggle="modal" data-bs-target="#addPromoModal">
+                <span>+ СОЗДАТЬ КОД</span>
+            </button>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var promo in Model)
+            {
+                <div class="col-md-4">
+                    <div class="stats-card-blue h-100">
+                        <label>КОД: <span class="text-white">@promo.Code</span></label>
+                        <div class="value mt-2">@promo.DiscountPercent.ToString("F0")% OFF</div>
+
+                        <div class="mt-3 small">
+                            <div class="text-white-50">Действует до: <span class="text-primary-blue">@promo.ValidTo.ToShortDateString()</span></div>
+                            <div class="text-white-50">
+                                Использовано: <span class="text-white">@promo.CurrentUses / @(promo.MaxUses?.ToString() ?? "∞")</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2 align-items-center">
+                            <form asp-action="DeletePromo" method="post" onsubmit="return confirm('Удалить этот промокод?');">
+                                <input type="hidden" name="id" value="@promo.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm border-0 small">
+                                    <i class="fas fa-trash-alt"></i> УДАЛИТЬ
+                                </button>
+                            </form>
+
+                            <div class="ms-auto">
+                                <form asp-action="TogglePromoStatus" method="post" id="toggleForm_@promo.Id">
+                                    <input type="hidden" name="id" value="@promo.Id" />
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox"
+                                               @(promo.IsActive ? "checked" : "")
+                                               onchange="document.getElementById('toggleForm_@promo.Id').submit();">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPromoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-white fw-bold">НОВЫЙ ПРОМОКОД</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CreatePromoCode" method="post">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="text-gray small mb-2">КОД (например: SUMMER2026)</label>
+                        <input type="text" name="Code" class="form-control modern-input" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="text-gray small mb-2">СКИДКА %</label>
+                            <input type="number" name="DiscountPercent" class="form-control modern-input" min="1" max="100" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="text-gray small mb-2">ЛИМИТ ИСПОЛЬЗОВАНИЙ</label>
+                            <input type="number" name="MaxUses" class="form-control modern-input" placeholder="Напр: 100">
+                            <small class="text-white-50" style="font-size: 0.6rem;">Оставьте пустым для безлимита</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-gray small mb-2">ДЕЙСТВУЕТ ДО</label>
+                        <input type="date" name="ValidTo" class="form-control modern-input" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn-login-neon w-100 py-2"><span>СОХРАНИТЬ</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 10px !important;
+        padding: 10px !important;
+    }
+
+        .modern-input:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #006aff !important;
+            box-shadow: 0 0 10px rgba(0, 106, 255, 0.2) !important;
+        }
+
+    .smooth-wrapper {
+        padding-top: 80px !important; 
+    }
+
+    .chart-container-dark {
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 30px;
+    }
+
+    .stats-card-blue {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(0, 106, 255, 0.1);
+        padding: 25px;
+        border-radius: 20px;
+        position: relative;
+        transition: 0.3s;
+    }
+
+        .stats-card-blue:hover {
+            border-color: #006aff;
+            box-shadow: 0 0 20px rgba(0, 106, 255, 0.1);
+        }
+
+        .stats-card-blue .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff; 
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        
+
+    .custom-neon-table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .custom-neon-table tbody tr {
+            background: rgba(255, 255, 255, 0.02) !important;
+            transition: transform 0.2s ease;
+        }
+
+            .custom-neon-table tbody tr:hover {
+                background: rgba(0, 106, 255, 0.04) !important;
+                transform: scale(1.005);
+            }
+
+        .custom-neon-table td {
+            padding: 20px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .custom-neon-table tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .custom-neon-table tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+    .form-check-input {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+    }
+
+        .form-check-input:checked {
+            background-color: #006aff !important;
+            border-color: #006aff !important;
+            box-shadow: 0 0 10px rgba(0, 106, 255, 0.5);
+        }
+
+        .form-check-input:focus {
+            box-shadow: none;
+            border-color: #006aff;
+        }
+
+    .btn-login-neon {
+        background: transparent;
+        border: 1px solid #006aff;
+        color: #006aff;
+        position: relative;
+        overflow: hidden;
+        transition: 0.3s;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-radius: 8px;
+    }
+
+        .btn-login-neon:hover {
+            background: #006aff;
+            color: white;
+            box-shadow: 0 0 15px rgba(0, 106, 255, 0.4);
+        }
+
+    .badge {
+        font-size: 0.65rem;
+        padding: 6px 12px;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        font-weight: 700;
+    }
+
+    .shadow-neon-blue {
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+    }
+
+    .text-gray {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .extra-small {
+        font-size: 0.65rem;
+    }
+
+    .tracking-wider {
+        letter-spacing: 3px;
+    }
+
+    :root {
+        --neon-green: #39ff14; 
+    }
+
+    .text-neon-green {
+        color: var(--neon-green) !important;
+        text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+    }
+</style>

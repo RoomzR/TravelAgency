@@ -1,0 +1,337 @@
+﻿@model IEnumerable<TravelAgency.BLL.DTOs.UserDTO>
+@{
+    ViewData["Title"] = "Управление персоналом";
+}
+
+<div class="smooth-wrapper bg-black py-5">
+    <div class="container-fluid px-lg-5">
+
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-6">
+                <h1 class="text-white fw-black mb-0 text-uppercase tracking-wider">Управление пользователями</h1>
+                <p class="text-primary-blue mb-0 small fw-bold">
+                    <i class="fas fa-users-cog me-2"></i>КОНТРОЛЬ ДОСТУПА И РОЛЕЙ
+                </p>
+            </div>
+            <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+                <div class="stats-badge-neon">
+                    <span class="text-gray small text-uppercase">Всего в базе:</span>
+                    <span class="text-white fw-bold ms-2">@Model.Count()</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container-dark">
+            <div class="table-responsive">
+                <table class="table custom-neon-table align-middle">
+                    <thead>
+                        <tr class="text-gray extra-small text-uppercase border-bottom border-white-05">
+                            <th class="py-3">Пользователь</th>
+                            <th class="py-3">Контактные данные</th>
+                            <th class="py-3 text-center">Текущая роль</th>
+                            <th class="py-3">Дата регистрации</th>
+                            <th class="py-3 text-end">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      
+                        @foreach (var user in Model)
+                        {
+                            <tr class="border-bottom border-white-02">
+                                <td class="py-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-glow me-3">
+                                            <i class="fas fa-user-shield"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-white fw-bold">@user.FullName</div>
+                                            <div class="text-gray small">ID: @user.Id.Substring(0, Math.Min(user.Id.Length, 8))...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-white-50 small">
+                                        <i class="fas fa-envelope me-2 text-primary-blue"></i>@user.Email
+                                    </div>
+                                    <div class="extra-small mt-1">
+                                        @if (user.IsBlocked)
+                                        {
+                                            <span class="text-danger"><i class="fas fa-ban me-1"></i>ДОСТУП ОГРАНИЧЕН</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success"><i class="fas fa-check-circle me-1"></i>АКТИВЕН</span>
+                                        }
+                                    </div>
+                                <td class="text-center">
+                                  
+                                    <div class="role-text-executive @(user.RoleName?.ToLower() ?? "client")">
+                                        @(user.RoleName?.ToUpper() ?? "CLIENT")
+                                    </div>
+                                </td>
+                                <td class="text-gray small">
+                                    @user.RegistrationDate.ToString("dd.MM.yyyy")
+                                </td>
+                                <td class="text-end">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <form asp-action="UpdateRole" method="post" class="d-flex gap-2">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <select name="role" onchange="this.form.submit()" class="modern-input-sm">
+                                                    <option selected disabled>СМЕНИТЬ РОЛЬ</option>
+                                                    <option value="Admin">ADMIN</option>
+                                                    <option value="Manager">MANAGER</option>
+                                                    <option value="Client">CLIENT</option>
+                                                </select>
+                                            </form>
+                                        @if (user.Id != User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                                        {
+                                            @if (user.IsBlocked)
+                                            {
+                                                <form asp-action="UnblockUser" method="post" class="d-inline">
+                                                    <input type="hidden" name="userId" value="@user.Id" />
+                                                    <button type="submit" class="btn-icon-success" title="Восстановить доступ">
+                                                        <i class="fas fa-unlock"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                               
+                                                <form asp-action="BlockUser" method="post" class="d-inline">
+                                                    <input type="hidden" name="userId" value="@user.Id" />
+                                                    <button type="submit" class="btn-icon-danger" title="Заблокировать">
+                                                        <i class="fas fa-user-slash"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-role admin" style="opacity: 0.5;">
+                                                <i class="fas fa-user-check me-1"></i> ЭТО ВЫ
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-neon-table {
+        border-collapse: separate;
+        border-spacing: 0 10px; 
+    }
+
+        .custom-neon-table thead th {
+            border: none;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            padding: 15px 20px;
+        }
+
+        .custom-neon-table tbody tr {
+            background: rgba(255, 255, 255, 0.02) !important;
+            transition: all 0.3s ease;
+        }
+
+            .custom-neon-table tbody tr:hover {
+                background: rgba(0, 106, 255, 0.05) !important;
+                box-shadow: 0 0 20px rgba(0, 106, 255, 0.1);
+                transform: scale(1.002);
+            }
+
+        .custom-neon-table td {
+            border: none;
+            padding: 20px;
+            vertical-align: middle;
+        }
+
+        .custom-neon-table tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .custom-neon-table tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+    .avatar-glow {
+        width: 45px;
+        height: 45px;
+        background: rgba(0, 106, 255, 0.1);
+        border: 1px solid rgba(0, 106, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #006aff;
+        font-size: 1.2rem;
+        text-shadow: 0 0 10px rgba(0, 106, 255, 0.5);
+    }
+
+    .role-text-executive {
+        font-size: 0.75rem;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        position: relative;
+        display: inline-block;
+    }
+
+        .role-text-executive.admin {
+            color: #ff3b30; 
+            text-shadow: 0 0 10px rgba(255, 59, 48, 0.3);
+        }
+
+        .role-text-executive.manager {
+            color: #006aff;
+            text-shadow: 0 0 10px rgba(0, 106, 255, 0.3);
+        }
+
+        .role-text-executive.client {
+            color: #86868b; 
+            opacity: 0.8;
+        }
+    
+
+    .status-indicator {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .text-success {
+        color: #30d158 !important;
+        text-shadow: 0 0 8px rgba(48, 209, 88, 0.2);
+    }
+
+    .text-danger {
+        color: #ff3b30 !important;
+        text-shadow: 0 0 8px rgba(255, 59, 48, 0.2);
+    }
+    .btn-icon-success {
+        background: rgba(48, 209, 88, 0.05); 
+        border: 1px solid rgba(48, 209, 88, 0.1);
+        color: #30d158; 
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .btn-icon-success:hover {
+            background: #30d158;
+            color: #fff;
+            border-color: #30d158;
+            box-shadow: 0 0 15px rgba(48, 209, 88, 0.4);
+            transform: translateY(-2px);
+        }
+    .btn-icon-danger {
+        background: rgba(255, 59, 48, 0.05);
+        border: 1px solid rgba(255, 59, 48, 0.1);
+        color: #ff3b30;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .btn-icon-danger:hover {
+            background: #ff3b30;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.4);
+            transform: translateY(-2px);
+        }
+
+    .border-white-05 {
+        border-color: rgba(255,255,255,0.05) !important;
+    }
+
+    .border-white-02 {
+        border-color: rgba(255,255,255,0.02) !important;
+    }
+
+    .stats-badge-neon {
+        background: rgba(0, 106, 255, 0.05);
+        border: 1px solid rgba(0, 106, 255, 0.2);
+        padding: 10px 25px;
+        border-radius: 100px;
+        display: inline-block;
+    }
+
+    .badge-role {
+        padding: 5px 15px;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+        .badge-role.admin {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .badge-role.manager {
+            background: rgba(0, 106, 255, 0.1);
+            color: #006aff;
+            border: 1px solid rgba(0, 106, 255, 0.2);
+        }
+
+        .badge-role.client {
+            background: rgba(255, 255, 255, 0.05);
+            color: #86868b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+    .modern-input-sm {
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #86868b;
+        font-size: 0.7rem;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 5px 10px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+        .modern-input-sm:hover {
+            border-color: #006aff;
+            color: #fff;
+        }
+
+    .btn-icon-danger {
+        background: rgba(255, 59, 48, 0.05);
+        border: 1px solid rgba(255, 59, 48, 0.1);
+        color: #ff3b30;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+        .btn-icon-danger:hover {
+            background: #ff3b30;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.4);
+        }
+</style>

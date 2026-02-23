@@ -92,10 +92,8 @@ namespace TravelAgency.DAL.Repositories
                 searchTerm, countryId, tourTypeId, minPrice, maxPrice,
                 minDuration, maxDuration, isHotDeal, startDateFrom, startDateTo);
 
-            // Apply sorting
             query = ApplySorting(query, sortBy, sortDescending);
 
-            // Apply pagination
             query = query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
@@ -242,6 +240,34 @@ namespace TravelAgency.DAL.Repositories
                 .Include(t => t.Reviews)
                 .Include(t => t.CreatedBy)
                 .FirstOrDefaultAsync(t => t.Id == id);
+        }
+        public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
+        {
+            return await _context.Set<Hotel>()
+                .OrderBy(h => h.Name)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Hotel>> GetHotelsByCountryAsync(int? countryId)
+        {
+            if (!countryId.HasValue)
+                return Enumerable.Empty<Hotel>();
+
+            return await _context.Set<Hotel>()
+                .Include(h => h.City)
+                .Where(h => h.City.CountryId == countryId.Value) 
+                .OrderBy(h => h.Name)
+                .ToListAsync();
+        }
+        public async Task<Hotel?> GetHotelByIdAsync(int id)
+        {
+            return await _context.Set<Hotel>().FindAsync(id);
+        }
+        public async Task<IEnumerable<City>> GetCitiesByCountryAsync(int countryId)
+        {
+            return await _context.Set<City>()
+                .Where(c => c.CountryId == countryId)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
         }
     }
 }
