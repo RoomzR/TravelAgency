@@ -1,0 +1,85 @@
+﻿@using TravelAgency.Web.Models.ViewModels
+@model IEnumerable<DialogViewModel>
+
+@{
+    ViewData["Title"] = "Мои сообщения";
+}
+
+<div class="container mt-5 py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="giant-title-mini text-white mb-0">МОИ ДИАЛОГИ</h2>
+        <span class="badge-neon-blue">@Model.Count() чатов</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card-modern p-5 text-center border-primary-glow">
+            <i class="fas fa-comment-slash display-1 text-muted mb-4"></i>
+            <h4 class="text-white">У вас пока нет сообщений</h4>
+            <p class="text-gray">Здесь будут отображаться ваши переписки с менеджерами.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var dialog in Model)
+            {
+                <div class="col-12">
+                    <a asp-controller="Chat" asp-action="Index" asp-route-receiverId="@dialog.UserId"
+                           class="dialog-card shadow-sm p-3 d-flex justify-content-between align-items-center">
+                        
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle me-3">
+                                @dialog.FullName.Substring(0, 1).ToUpper()
+                            </div>
+                            <div>
+                                <h6 class="text-white mb-1 fw-bold">@dialog.FullName</h6>
+                                <p class="text-gray small mb-0 text-truncate" style="max-width: 300px;">
+                                    @dialog.LastMessage
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <small class="text-gray d-block mb-2">@dialog.LastMessageTime.ToString("dd.MM HH:mm")</small>
+                            <i class="fas fa-chevron-right text-primary-blue"></i>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .dialog-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .dialog-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #006aff;
+            transform: translateX(10px);
+        }
+
+    .avatar-circle {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(45deg, #006aff, #00d4ff);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .text-gray {
+        color: rgba(255, 255, 255, 0.5);
+    }
+</style>

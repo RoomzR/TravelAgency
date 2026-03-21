@@ -88,6 +88,10 @@
                                         <span class="badge-neon-red">HOT</span>
                                     }
                                     <span class="badge-neon-blue">@tour.TourTypeName</span>
+
+                                    <button class="wishlist-btn" data-tour-id="@tour.Id" title="Добавить в избранное">
+                                        <i class="far fa-heart"></i>
+                                    </button>
                                 </div>
                                 <div class="price-float">
                                     @if (tour.DiscountPercent > 0 && tour.OriginalPrice.HasValue)
@@ -335,6 +339,34 @@
             color: #fff;
             transform: translateX(5px);
         }
+
+    .wishlist-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-left: auto; 
+    }
+
+        .wishlist-btn:hover {
+            transform: scale(1.1);
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+        }
+
+        .wishlist-btn.active i {
+            font-weight: 900;
+            color: #ff4d4d;
+        }
 </style>
 
 <script>
@@ -343,6 +375,50 @@
         selects.forEach(select => {
             select.addEventListener('change', function() {
                 this.closest('form').submit();
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Скрипт загружен, ищу кнопки...");
+
+        const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+        console.log("Найдено кнопок:", wishlistButtons.length);
+
+        wishlistButtons.forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                e.stopPropagation(); 
+
+                const tourId = this.dataset.tourId;
+                const icon = this.querySelector('i');
+
+                console.log("Клик по туру ID:", tourId);
+
+                try {
+                    const response = await fetch('/Wishlist/Toggle/' + tourId, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log("Сервер ответил:", result);
+
+                        if (result.isInWishlist) {
+                            this.classList.add('active');
+                            icon.classList.replace('far', 'fas');
+                        } else {
+                            this.classList.remove('active');
+                            icon.classList.replace('fas', 'far');
+                        }
+                    } else {
+                        console.error("Ошибка сервера:", response.status);
+                        if (response.status === 401) alert("Войдите в систему!");
+                    }
+                } catch (err) {
+                    console.error("Ошибка запроса:", err);
+                }
             });
         });
     });

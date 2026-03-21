@@ -26,6 +26,7 @@ namespace TravelAgency.DAL.Data
         public DbSet<TourRating> TourRatings { get; set; } = null!;
         public DbSet<FAQ> FAQs { get; set; } = null!;
         public DbSet<ContactRequest> ContactRequests { get; set; } = null!;
+        public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -195,6 +196,19 @@ namespace TravelAgency.DAL.Data
 
             builder.Entity<Promocode>()
                 .HasIndex(pc => pc.ValidTo);
+
+            builder.Entity<ChatMessage>(entity =>
+            {
+                entity.HasOne(m => m.Sender)
+                      .WithMany() 
+                      .HasForeignKey(m => m.SenderId)
+                      .OnDelete(DeleteBehavior.Restrict); 
+
+                entity.HasOne(m => m.Receiver)
+                      .WithMany() 
+                      .HasForeignKey(m => m.ReceiverId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }

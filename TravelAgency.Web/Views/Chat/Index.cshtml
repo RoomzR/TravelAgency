@@ -1,0 +1,210 @@
+﻿@model IEnumerable<TravelAgency.DAL.Entities.ChatMessage>
+@{
+    var currentUserId = ViewBag.CurrentUserId as string;
+    ViewData["Title"] = "Чат";
+}
+
+<div class="chat-page-wrapper py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                
+                <div class="d-flex align-items-center mb-3">
+                    <a asp-action="MyDialogs" class="btn btn-outline-secondary btn-sm rounded-circle me-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h3 class="text-white mb-0">Диалог</h3>
+                </div>
+
+                <div class="card chat-card bg-dark text-white shadow-lg">
+                    <div class="card-header border-secondary bg-transparent py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-sm me-2"></div>
+                            <span class="fw-bold">@ViewBag.ReceiverName</span> </div>
+                    </div>
+
+                    <div class="card-body chat-body" id="messagesList">
+                        @foreach (var msg in Model)
+                        {
+                            bool isMine = msg.SenderId == currentUserId;
+                            <div class="mb-3 d-flex @(isMine ? "justify-content-end" : "justify-content-start")">
+                                <div class="message-bubble @(isMine ? "bubble-mine" : "bubble-other") shadow-sm">
+                                    <small class="d-block fw-bold opacity-75 mb-1">
+                                        @(isMine ? "Вы" : $"{msg.Sender.FirstName} {msg.Sender.LastName}")
+                                    </small>
+                                    <div class="message-text">@msg.Message</div>
+                                    <small class="d-block text-end mt-1 time-text">
+                                        @msg.SentAt.ToString("HH:mm")
+                                    </small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-transparent border-secondary p-3">
+                        <div id="typingStatus" class="typing-indicator small mb-2"></div>
+                        <div class="input-group chat-input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Напишите сообщение...">
+                            <button id="sendButton" class="btn btn-primary-neon">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
+<input type="hidden" id="currentUserId" value="@currentUserId" />
+
+<style>
+    /* Основная обертка: предотвращает наложение на Navbar */
+    .chat-page-wrapper {
+        min-height: 100vh;
+        padding-top: 100px !important; /* Увеличь, если Navbar высокий */
+        background: radial-gradient(circle at top right, #0a0a0c, #111116);
+    }
+
+    .chat-card {
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+
+    .chat-body {
+        height: 550px;
+        overflow-y: auto;
+        padding: 25px;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Стили пузырьков сообщений */
+    .message-bubble {
+        padding: 12px 18px;
+        border-radius: 18px;
+        max-width: 75%;
+        position: relative;
+        line-height: 1.5;
+    }
+
+    .bubble-mine {
+        background: linear-gradient(135deg, #006aff, #004db3);
+        color: white;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0, 106, 255, 0.2);
+    }
+
+    .bubble-other {
+        background: rgba(255, 255, 255, 0.08);
+        color: #eee;
+        border-bottom-left-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .time-text {
+        font-size: 0.65rem;
+        opacity: 0.6;
+    }
+
+    /* Поле ввода */
+    .chat-input-group {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50px;
+        padding: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-input-group input {
+        background: transparent !important;
+        border: none !important;
+        color: white !important;
+        box-shadow: none !important;
+        padding-left: 20px;
+    }
+
+    .btn-primary-neon {
+        background: #006aff;
+        border: none;
+        border-radius: 50px;
+        padding: 8px 20px;
+        transition: 0.3s;
+    }
+
+    .btn-primary-neon:hover {
+        background: #00d4ff;
+        box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+    }
+
+    .typing-indicator {
+        color: #00d4ff;
+        font-style: italic;
+        height: 20px;
+        padding-left: 10px;
+    }
+
+    /* Кастомный скроллбар */
+    .chat-body::-webkit-scrollbar {
+        width: 5px;
+    }
+    .chat-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        const list = document.getElementById("messagesList");
+        const currentUserId = document.getElementById("currentUserId").value;
+        const rid = document.getElementById("receiverId").value; 
+        
+        // Авто-скролл вниз при загрузке
+        list.scrollTop = list.scrollHeight;
+
+        connection.on("UserTyping", function(senderFirstName) {
+            const statusDiv = document.getElementById("typingStatus");
+            statusDiv.innerText = `${senderFirstName} печатает...`;
+            clearTimeout(window.typingTimer);
+            window.typingTimer = setTimeout(() => statusDiv.innerText = "", 3000);
+        });
+
+        connection.on("ReceiveMessage", function(data) {
+            document.getElementById("typingStatus").innerText = "";
+            const isMine = data.senderId === currentUserId;
+
+            const html = `
+                <div class="mb-3 d-flex ${isMine ? 'justify-content-end' : 'justify-content-start'}">
+                    <div class="message-bubble ${isMine ? 'bubble-mine' : 'bubble-other'}">
+                        <small class="d-block fw-bold opacity-75 mb-1">${isMine ? 'Вы' : data.senderName}</small>
+                        <div class="message-text">${data.text}</div>
+                        <small class="d-block text-end mt-1 time-text">${data.time}</small>
+                    </div>
+                </div>`;
+            
+            list.innerHTML += html;
+            list.scrollTop = list.scrollHeight;
+        });
+
+        connection.start();
+
+        document.getElementById("messageInput").addEventListener("input", () => {
+            connection.invoke("Typing", rid).catch(console.error);
+        });
+
+        document.getElementById("sendButton").onclick = function() {
+            const input = document.getElementById("messageInput");
+            if (input.value.trim()) {
+                connection.invoke("SendMessage", rid, input.value);
+                input.value = "";
+            }
+        };
+    </script>
+}

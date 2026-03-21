@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TravelAgency.DAL.Entities;
 using TravelAgency.BLL.Interfaces;
 using TravelAgency.BLL.Mapping;
 using TravelAgency.BLL.Services;
 using TravelAgency.DAL;
 using TravelAgency.DAL.Data;
-using TravelAgency.DAL.Repositories;
+using TravelAgency.DAL.Entities;
 using TravelAgency.DAL.Interfaces;
+using TravelAgency.DAL.Repositories;
+using TravelAgency.Web.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,8 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 //builder.Services.AddScoped<IContactService, ContactService>();
 //builder.Services.AddScoped<IFAQService, FAQService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddSignalR();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -80,6 +83,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
+
+app.MapHub<ChatHub>("/chatHub");
 
 if (app.Environment.IsDevelopment())
 {

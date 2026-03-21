@@ -33,6 +33,7 @@
         public decimal? DiscountedPrice { get; set; }
 
 
+
         public bool IsAlreadyBookedByUser { get; set; }
     }
 

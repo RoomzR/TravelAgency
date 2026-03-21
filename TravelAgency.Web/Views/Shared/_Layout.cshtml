@@ -269,8 +269,87 @@
             duration: 800,
             once: true
         });
+
+        connection.on("NotifyNewMessage", function(data) {
+        
+        console.log("Новое сообщение от " + data.senderName);
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <div class="support-fab-container">
+    <div class="support-tooltip">Нужна помощь?</div>
+    <a asp-controller="Chat" asp-action="Support" class="support-fab">
+        <i class="fas fa-headset"></i>
+        <span class="pulse-ring"></span>
+    </a>
+</div>
+
+<style>
+    .support-fab-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+    }
+
+    .support-tooltip {
+        background: #006aff;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-right: 15px;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0, 106, 255, 0.4);
+    }
+
+    .support-fab-container:hover .support-tooltip {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .support-fab {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #006aff 0%, #003399 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(0, 106, 255, 0.5);
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .support-fab:hover {
+        transform: scale(1.1) rotate(10deg);
+        color: white;
+    }
+
+    .pulse-ring {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #006aff;
+        animation: fab-pulse 2s infinite;
+        z-index: -1;
+    }
+
+    @@keyframes fab-pulse {
+        0% { transform: scale(1); opacity: 0.6; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+</style>
 </body>
 </html>

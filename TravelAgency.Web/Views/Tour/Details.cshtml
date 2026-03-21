@@ -176,15 +176,40 @@
                             </div>
                         </div>
 
-                        <div class="card-modern p-4 mt-4 bg-primary-gradient">
-                            <h5 class="text-white fw-bold mb-3">Есть вопросы?</h5>
-                            <div class="d-flex align-items-center text-white">
-                                <div class="icon-circle me-3"><i class="fas fa-phone-alt"></i></div>
+                        <div class="card-modern p-4 mt-4 border-primary-glow shadow-neon-blue animate__animated animate__fadeInUp">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box-neon me-3">
+                                    <i class="fas fa-comment-alt-lines"></i>
+                                </div>
                                 <div>
-                                    <div class="small opacity-75">Круглосуточная линия</div>
-                                    <div class="fw-bold">+375 (44) 796-03-06</div>
+                                    <h5 class="text-white fw-black mb-0 text-uppercase tracking-wider" style="font-size: 0.9rem;">Прямая связь</h5>
+                                    <div class="text-primary-blue small fw-bold">Менеджер онлайн</div>
                                 </div>
                             </div>
+
+                            <p class="text-gray extra-small mb-4 opacity-75">
+                                Есть вопросы по перелету или отелю? Наш специалист ответит вам в течение пары минут.
+                            </p>
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a asp-controller="Chat" asp-action="Index" asp-route-receiverId="@Model.CreatedById"
+                                       class="btn-messenger-neon w-100">
+                                    <span class="btn-content">
+                                        <i class="fas fa-paper-plane me-2"></i> НАЧАТЬ ДИАЛОГ
+                                    </span>
+                                    <span class="btn-glitch"></span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Login", "Account", new { returnUrl = Context.Request.Path })"
+                                       class="btn-auth-neon w-100">
+                                    <span class="btn-content">
+                                        <i class="fas fa-lock me-2"></i> ВОЙТИ ДЛЯ СВЯЗИ
+                                    </span>
+                                </a>
+                            }
                         </div>
 
                         @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
@@ -449,7 +474,66 @@
         font-size: 0.75rem;
         box-shadow: 0 5px 15px rgba(255,77,77,0.4);
     }
+.shadow-neon-blue {
+    box-shadow: 0 10px 40px rgba(0, 106, 255, 0.15);
+}
 
+.icon-box-neon {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 106, 255, 0.1);
+    border: 1px solid rgba(0, 106, 255, 0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #006aff;
+    font-size: 1.2rem;
+}
+
+.btn-messenger-neon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: #006aff;
+    color: #fff !important;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    font-size: 0.8rem;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.btn-messenger-neon:hover {
+    background: #0056d2;
+    box-shadow: 0 0 25px rgba(0, 106, 255, 0.6);
+    transform: translateY(-3px);
+}
+
+.btn-messenger-neon::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(30deg);
+    transition: all 0.6s;
+}
+
+.btn-messenger-neon:hover::after {
+    left: 120%;
+}
+
+.extra-small {
+    font-size: 0.75rem;
+}
     .modern-input {
         background: rgba(255,255,255,0.05) !important;
         border: 1px solid rgba(255,255,255,0.1) !important;
